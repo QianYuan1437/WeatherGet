@@ -27,65 +27,79 @@
             </div>
         </header>
 
-        <!-- 更新时间 -->
-        <div class="update-time" id="updateTime">
-            <span data-zh="数据更新时间" data-en="Data Update Time">数据更新时间</span>: 
-            <span id="updateTimeValue">--</span>
-        </div>
-
-        <!-- 主要天气区域 - 双栏布局 -->
-        <div class="weather-section">
-            <!-- 主要天气卡片 -->
-            <div class="weather-main card">
-                <div class="weather-icon-large" id="weatherIcon">☀️</div>
-                <div class="temperature">
-                    <span id="temp">--</span><span class="unit">°C</span>
+        <!-- 实时天气概览 -->
+        <div class="current-weather-section">
+            <div class="current-main card">
+                <div class="update-time" id="pubtime">
+                    <span data-zh="更新于" data-en="Updated at">更新于</span>: <span id="updateTimeValue">--</span>
                 </div>
-                <div class="weather-desc" id="weatherDesc" data-zh="晴" data-en="Sunny">晴</div>
-                <div class="weather-detail">
-                    <span data-zh="体感温度" data-en="Feels Like">体感温度</span>: 
-                    <span id="feelsLike">--</span>°C
+                <div class="current-temp">
+                    <span id="temperature">--</span><span class="temp-unit">℃</span>
+                </div>
+                <div class="current-weather">
+                    <span id="weatherIcon">☀️</span>
+                    <span id="weatherDesc" data-zh="晴" data-en="Sunny">晴</span>
+                </div>
+                <div class="current-wind" id="wind">
+                    <span data-zh="风速" data-en="Wind">风速</span>: <span id="windText">--</span>
                 </div>
             </div>
 
-            <!-- 详细信息卡片 -->
-            <div class="weather-details">
-                <div class="detail-card card">
-                    <div class="detail-icon">💧</div>
-                    <div class="detail-label" data-zh="湿度" data-en="Humidity">湿度</div>
-                    <div class="detail-value" id="humidity">--%</div>
-                </div>
-                <div class="detail-card card">
-                    <div class="detail-icon">💨</div>
-                    <div class="detail-label" data-zh="风速" data-en="Wind Speed">风速</div>
-                    <div class="detail-value" id="windSpeed">-- m/s</div>
-                </div>
-                <div class="detail-card card">
+            <div class="current-details">
+                <div class="detail-item card">
                     <div class="detail-icon">🌡️</div>
                     <div class="detail-label" data-zh="气压" data-en="Pressure">气压</div>
                     <div class="detail-value" id="pressure">-- hPa</div>
                 </div>
-                <div class="detail-card card">
-                    <div class="detail-icon">👁️</div>
-                    <div class="detail-label" data-zh="能见度" data-en="Visibility">能见度</div>
-                    <div class="detail-value" id="visibility">-- km</div>
+                <div class="detail-item card">
+                    <div class="detail-icon">💧</div>
+                    <div class="detail-label" data-zh="湿度" data-en="Humidity">湿度</div>
+                    <div class="detail-value" id="humidity">--%</div>
+                </div>
+                <div class="detail-item card">
+                    <div class="detail-icon">🌧️</div>
+                    <div class="detail-label" data-zh="降水" data-en="Precipitation">降水</div>
+                    <div class="detail-value" id="precipitation">-- mm</div>
                 </div>
             </div>
         </div>
 
-        <!-- 24小时预报 -->
+        <!-- 7天天气预报 -->
         <div class="forecast-section card">
-            <h3 class="section-title" data-zh="24小时预报" data-en="24-Hour Forecast">24小时预报</h3>
-            <div class="forecast-scroll" id="hourlyForecast">
+            <h3 class="section-title" data-zh="7天天气预报" data-en="7-Day Forecast">7天天气预报</h3>
+            <div class="day-list" id="dayList">
                 <!-- 动态生成 -->
             </div>
         </div>
 
-        <!-- 未来几天预报 -->
-        <div class="forecast-section card">
-            <h3 class="section-title" data-zh="未来天气预报" data-en="5-Day Forecast">未来天气预报</h3>
-            <div class="daily-forecast" id="dailyForecast">
-                <!-- 动态生成 -->
+        <!-- 逐小时预报 -->
+        <div class="hourly-section card">
+            <h3 class="section-title" data-zh="逐小时精细化预报" data-en="Hourly Forecast">逐小时精细化预报</h3>
+            <div class="hourly-controls">
+                <span data-zh="选择日期：" data-en="Select Day:">选择日期：</span>
+                <div class="day-tabs" id="dayTabs">
+                    <!-- 动态生成 -->
+                </div>
+            </div>
+            <div class="hourly-table-container">
+                <table class="hourly-table" id="hourlyTable">
+                    <thead>
+                        <tr>
+                            <th data-zh="时间" data-en="Time">时间</th>
+                            <th data-zh="天气" data-en="Weather">天气</th>
+                            <th data-zh="气温" data-en="Temp">气温</th>
+                            <th data-zh="降水" data-en="Precip">降水</th>
+                            <th data-zh="风速" data-en="Wind">风速</th>
+                            <th data-zh="风向" data-en="Wind Dir">风向</th>
+                            <th data-zh="气压" data-en="Pressure">气压</th>
+                            <th data-zh="湿度" data-en="Humidity">湿度</th>
+                            <th data-zh="云量" data-en="Cloud">云量</th>
+                        </tr>
+                    </thead>
+                    <tbody id="hourlyTableBody">
+                        <!-- 动态生成 -->
+                    </tbody>
+                </table>
             </div>
         </div>
 

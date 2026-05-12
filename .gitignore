@@ -20,3 +20,7 @@ npm-debug.log*
 # Build
 dist/
 build/
+
+# Reference HTML (not to be uploaded)
+中国气象局-天气预报-城市预报.html
+中国气象局-天气预报-城市预报_files/
