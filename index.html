@@ -33,40 +33,43 @@
             <span id="updateTimeValue">--</span>
         </div>
 
-        <!-- 主要天气卡片 -->
-        <div class="weather-main card">
-            <div class="weather-icon-large" id="weatherIcon">☀️</div>
-            <div class="temperature">
-                <span id="temp">--</span><span class="unit">°C</span>
+        <!-- 主要天气区域 - 双栏布局 -->
+        <div class="weather-section">
+            <!-- 主要天气卡片 -->
+            <div class="weather-main card">
+                <div class="weather-icon-large" id="weatherIcon">☀️</div>
+                <div class="temperature">
+                    <span id="temp">--</span><span class="unit">°C</span>
+                </div>
+                <div class="weather-desc" id="weatherDesc" data-zh="晴" data-en="Sunny">晴</div>
+                <div class="weather-detail">
+                    <span data-zh="体感温度" data-en="Feels Like">体感温度</span>: 
+                    <span id="feelsLike">--</span>°C
+                </div>
             </div>
-            <div class="weather-desc" id="weatherDesc" data-zh="晴" data-en="Sunny">晴</div>
-            <div class="weather-detail">
-                <span data-zh="体感温度" data-en="Feels Like">体感温度</span>: 
-                <span id="feelsLike">--</span>°C
-            </div>
-        </div>
 
-        <!-- 详细信息卡片 -->
-        <div class="weather-details">
-            <div class="detail-card card">
-                <div class="detail-icon">💧</div>
-                <div class="detail-label" data-zh="湿度" data-en="Humidity">湿度</div>
-                <div class="detail-value" id="humidity">--%</div>
-            </div>
-            <div class="detail-card card">
-                <div class="detail-icon">💨</div>
-                <div class="detail-label" data-zh="风速" data-en="Wind Speed">风速</div>
-                <div class="detail-value" id="windSpeed">-- m/s</div>
-            </div>
-            <div class="detail-card card">
-                <div class="detail-icon">🌡️</div>
-                <div class="detail-label" data-zh="气压" data-en="Pressure">气压</div>
-                <div class="detail-value" id="pressure">-- hPa</div>
-            </div>
-            <div class="detail-card card">
-                <div class="detail-icon">👁️</div>
-                <div class="detail-label" data-zh="能见度" data-en="Visibility">能见度</div>
-                <div class="detail-value" id="visibility">-- km</div>
+            <!-- 详细信息卡片 -->
+            <div class="weather-details">
+                <div class="detail-card card">
+                    <div class="detail-icon">💧</div>
+                    <div class="detail-label" data-zh="湿度" data-en="Humidity">湿度</div>
+                    <div class="detail-value" id="humidity">--%</div>
+                </div>
+                <div class="detail-card card">
+                    <div class="detail-icon">💨</div>
+                    <div class="detail-label" data-zh="风速" data-en="Wind Speed">风速</div>
+                    <div class="detail-value" id="windSpeed">-- m/s</div>
+                </div>
+                <div class="detail-card card">
+                    <div class="detail-icon">🌡️</div>
+                    <div class="detail-label" data-zh="气压" data-en="Pressure">气压</div>
+                    <div class="detail-value" id="pressure">-- hPa</div>
+                </div>
+                <div class="detail-card card">
+                    <div class="detail-icon">👁️</div>
+                    <div class="detail-label" data-zh="能见度" data-en="Visibility">能见度</div>
+                    <div class="detail-value" id="visibility">-- km</div>
+                </div>
             </div>
         </div>
 

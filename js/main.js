@@ -76,28 +76,39 @@ document.addEventListener('DOMContentLoaded', () => {
 function initTheme() {
     document.documentElement.setAttribute('data-theme', currentTheme);
     updateThemeIcon();
+    console.log('Theme initialized:', currentTheme);
 }
 
 function updateThemeIcon() {
+    if (!elements.themeToggle) {
+        console.error('Theme toggle button not found');
+        return;
+    }
     const icon = elements.themeToggle.querySelector('.theme-icon');
-    icon.textContent = currentTheme === 'dark' ? '☀️' : '🌙';
+    if (icon) {
+        icon.textContent = currentTheme === 'dark' ? '☀️' : '🌙';
+    }
 }
 
 function toggleTheme() {
+    console.log('Toggle theme clicked, current:', currentTheme);
     currentTheme = currentTheme === 'light' ? 'dark' : 'light';
     document.documentElement.setAttribute('data-theme', currentTheme);
     localStorage.setItem('theme', currentTheme);
     updateThemeIcon();
+    console.log('Theme changed to:', currentTheme);
 }
 
 // Language Functions
 function initLanguage() {
     updateLanguageUI();
+    console.log('Language initialized:', currentLang);
 }
 
 function updateLanguageUI() {
-    const elements = document.querySelectorAll('[data-zh]');
-    elements.forEach(el => {
+    const allElements = document.querySelectorAll('[data-zh]');
+    console.log('Found', allElements.length, 'elements with data-zh attribute');
+    allElements.forEach(el => {
         const text = currentLang === 'zh' ? el.dataset.zh : el.dataset.en;
         if (el.tagName === 'INPUT') {
             el.placeholder = text;
@@ -106,26 +117,47 @@ function updateLanguageUI() {
         }
     });
 
-    const langText = elements.langToggle.querySelector('.lang-text');
-    langText.textContent = currentLang === 'zh' ? 'EN' : '中';
+    if (elements.langToggle) {
+        const langText = elements.langToggle.querySelector('.lang-text');
+        if (langText) {
+            langText.textContent = currentLang === 'zh' ? 'EN' : '中';
+        }
+    }
 
     // Update document language
     document.documentElement.lang = currentLang === 'zh' ? 'zh-CN' : 'en';
 }
 
 function toggleLanguage() {
+    console.log('Toggle language clicked, current:', currentLang);
     currentLang = currentLang === 'zh' ? 'en' : 'zh';
     localStorage.setItem('lang', currentLang);
     updateLanguageUI();
     if (weatherData) {
         updateWeatherDisplay(weatherData);
     }
+    console.log('Language changed to:', currentLang);
 }
 
 // Event Listeners
 function initEventListeners() {
-    elements.themeToggle.addEventListener('click', toggleTheme);
-    elements.langToggle.addEventListener('click', toggleLanguage);
+    console.log('Initializing event listeners...');
+    console.log('themeToggle element:', elements.themeToggle);
+    console.log('langToggle element:', elements.langToggle);
+    
+    if (elements.themeToggle) {
+        elements.themeToggle.addEventListener('click', toggleTheme);
+        console.log('Theme toggle listener added');
+    } else {
+        console.error('themeToggle not found in DOM');
+    }
+    
+    if (elements.langToggle) {
+        elements.langToggle.addEventListener('click', toggleLanguage);
+        console.log('Language toggle listener added');
+    } else {
+        console.error('langToggle not found in DOM');
+    }
 }
 
 // Load Weather Data
