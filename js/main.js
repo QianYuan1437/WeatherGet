@@ -400,34 +400,57 @@ function parseWeatherHTML(html) {
 function updateWeatherDisplay(data) {
     if (!data) return;
 
-    // Update time
-    elements.updateTimeValue.textContent = data.updateTime || '--';
+    // Store reference to weatherData
+    weatherData = data;
 
-    // Update current weather
+    // Update time
+    if (elements.updateTimeValue) {
+        elements.updateTimeValue.textContent = data.updateTime || '--';
+    }
+
+    // Update current weather - only update if element exists and has content
     const current = data.current || {};
-    elements.temperature.textContent = current.temp || '--';
-    elements.weatherDesc.textContent = current.weather || '--';
-    elements.weatherDesc.dataset.zh = current.weather || '--';
-    elements.weatherDesc.dataset.en = translateWeather(current.weather);
+    if (elements.temperature) {
+        elements.temperature.textContent = current.temp || '--';
+    }
+    if (elements.weatherDesc) {
+        elements.weatherDesc.textContent = current.weather || '--';
+        elements.weatherDesc.dataset.zh = current.weather || '--';
+        elements.weatherDesc.dataset.en = translateWeather(current.weather);
+    }
     
     // Weather icon
-    const iconKey = getWeatherIconKey(current.weather);
-    elements.weatherIcon.textContent = weatherIcons[iconKey] || weatherIcons['default'];
+    if (elements.weatherIcon) {
+        const iconKey = getWeatherIconKey(current.weather);
+        elements.weatherIcon.textContent = weatherIcons[iconKey] || weatherIcons['default'];
+    }
 
     // Wind
-    elements.windText.textContent = current.wind || '--';
+    if (elements.windText) {
+        elements.windText.textContent = current.wind || '--';
+    }
 
     // Other details
-    elements.pressure.textContent = (current.pressure || '--') + ' hPa';
-    elements.humidity.textContent = (current.humidity || '--') + '%';
-    elements.precipitation.textContent = (current.precipitation || '0') + ' mm';
+    if (elements.pressure) {
+        elements.pressure.textContent = (current.pressure || '--') + ' hPa';
+    }
+    if (elements.humidity) {
+        elements.humidity.textContent = (current.humidity || '--') + '%';
+    }
+    if (elements.precipitation) {
+        elements.precipitation.textContent = (current.precipitation || '0') + ' mm';
+    }
 
     // Update daily forecast
-    updateDailyForecast(data.daily || []);
+    if (elements.dayList) {
+        updateDailyForecast(data.daily || []);
+    }
 
     // Update hourly forecast
-    updateHourlyTabs(data.daily || []);
-    if (data.hourly && data.hourly.length > 0) {
+    if (elements.dayTabs) {
+        updateHourlyTabs(data.daily || []);
+    }
+    if (elements.hourlyTableBody && data.hourly && data.hourly.length > 0) {
         updateHourlyTable(data.hourly[selectedDayIndex] || data.hourly[0]);
     }
 }
@@ -462,18 +485,23 @@ function translateWeather(zhWeather) {
 // Update Daily Forecast
 function updateDailyForecast(dailyData) {
     const container = elements.dayList;
+    if (!container) return;
+    
+    // Store current active index to restore after re-render
+    const prevActiveIndex = selectedDayIndex;
     container.innerHTML = '';
 
     dailyData.slice(0, 7).forEach((day, index) => {
         const div = document.createElement('div');
-        div.className = 'day-item' + (index === 0 ? ' actived' : '');
+        div.className = 'day-item' + (index === prevActiveIndex ? ' actived' : '');
         
         const weekday = day.weekday || getWeekdayFromDate(day.date);
         const dateStr = day.date || '';
+        const iconKey = day.dayWeatherIcon || day.dayWeather;
         
         div.innerHTML = `
             <div class="day-date">${weekday}<br>${dateStr}</div>
-            <div class="day-icon">${weatherIcons[day.dayWeatherIcon] || weatherIcons[day.dayWeather] || '☀️'}</div>
+            <div class="day-icon">${weatherIcons[iconKey] || weatherIcons['default']}</div>
             <div class="day-weather">${day.dayWeather || '--'}</div>
             <div class="day-temp">
                 <span class="high">${day.high || '--'}°</span> / 
@@ -482,13 +510,19 @@ function updateDailyForecast(dailyData) {
         `;
         
         div.addEventListener('click', () => {
-            document.querySelectorAll('.day-item').forEach(d => d.classList.remove('actived'));
-            div.classList.add('actived');
-            selectedDayIndex = index;
-            if (weatherData && weatherData.hourly && weatherData.hourly[index]) {
-                updateHourlyTable(weatherData.hourly[index]);
+            // Only update if clicking a different day
+            if (selectedDayIndex !== index) {
+                selectedDayIndex = index;
+                // Update active states without re-rendering entire list
+                document.querySelectorAll('.day-item').forEach(d => d.classList.remove('actived'));
+                div.classList.add('actived');
+                // Update hourly table
+                if (weatherData && weatherData.hourly && weatherData.hourly[index]) {
+                    updateHourlyTable(weatherData.hourly[index]);
+                }
+                // Update day tabs to sync
+                updateDayTabs();
             }
-            updateDayTabs();
         });
         
         container.appendChild(div);
@@ -511,6 +545,10 @@ function getWeekdayFromDate(dateStr) {
 // Update Day Tabs for hourly table
 function updateDayTabs() {
     const container = elements.dayTabs;
+    if (!container) return;
+    
+    // Store current scroll position
+    const scrollLeft = container.scrollLeft;
     container.innerHTML = '';
 
     if (!weatherData || !weatherData.daily) return;
@@ -522,19 +560,28 @@ function updateDayTabs() {
         tab.textContent = weekday;
         
         tab.addEventListener('click', () => {
-            document.querySelectorAll('.day-tab').forEach(t => t.classList.remove('actived'));
-            tab.classList.add('actived');
-            document.querySelectorAll('.day-item').forEach((d, i) => {
-                d.classList.toggle('actived', i === index);
-            });
-            selectedDayIndex = index;
-            if (weatherData && weatherData.hourly && weatherData.hourly[index]) {
-                updateHourlyTable(weatherData.hourly[index]);
+            // Only update if clicking a different tab
+            if (selectedDayIndex !== index) {
+                selectedDayIndex = index;
+                // Update active states
+                document.querySelectorAll('.day-tab').forEach(t => t.classList.remove('actived'));
+                tab.classList.add('actived');
+                // Sync day-list active state
+                document.querySelectorAll('.day-item').forEach((d, i) => {
+                    d.classList.toggle('actived', i === index);
+                });
+                // Update hourly table
+                if (weatherData && weatherData.hourly && weatherData.hourly[index]) {
+                    updateHourlyTable(weatherData.hourly[index]);
+                }
             }
         });
         
         container.appendChild(tab);
     });
+    
+    // Restore scroll position
+    container.scrollLeft = scrollLeft;
 }
 
 // Update Hourly Table
