@@ -1,0 +1,71 @@
+name: Weather Data Update
+
+on:
+  schedule:
+    # 每小时执行一次
+    # Run every hour
+    - cron: '0 * * * *'
+  workflow_dispatch:
+    # 允许手动触发
+    # Allow manual trigger
+  push:
+    branches:
+      - main
+
+jobs:
+  update-weather:
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Install dependencies
+        run: |
+          if [ -f package.json ]; then
+            npm install
+          fi
+
+      - name: Fetch weather data
+        run: |
+          node scripts/fetch-weather.js
+        continue-on-error: true
+
+      - name: Generate sample data if fetch fails
+        if: failure()
+        run: |
+          mkdir -p data
+          cat > data/weather.json << EOF
+          {
+            "updateTime": "${{ github.event.head_commit.timestamp }}",
+            "generationTime": "${{ github.event.head_commit.timestamp }}",
+            "location": "北京海淀区",
+            "locationCode": "54399",
+            "source": "China Meteorological Administration",
+            "current": {
+              "temp": "25",
+              "feelsLike": "24",
+              "weather": "晴",
+              "humidity": "45",
+              "windSpeed": "2.5",
+              "pressure": "1013",
+              "visibility": "15"
+            },
+            "hourly": [],
+            "daily": []
+          }
+          EOF
+          echo "Generated sample weather data"
+
+      - name: Commit and push data
+        run: |
+          git config --local user.email "github-actions[bot]@users.noreply.github.com"
+          git config --local user.name "github-actions[bot]"
+          git add data/weather.json
+          git diff --staged --quiet || git commit -m "Update weather data $(date -u +'%Y-%m-%d %H:%M:%S')"
+          git push

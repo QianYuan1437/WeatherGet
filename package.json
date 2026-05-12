@@ -1,0 +1,21 @@
+{
+  "name": "weather-get",
+  "version": "1.0.0",
+  "description": "北京海淀区天气预报 - Beijing Haidian Weather",
+  "main": "index.html",
+  "scripts": {
+    "fetch-weather": "node scripts/fetch-weather.js"
+  },
+  "keywords": [
+    "weather",
+    "beijing",
+    "haidian",
+    "cma",
+    "china-meteorological-administration"
+  ],
+  "author": "",
+  "license": "MIT",
+  "engines": {
+    "node": ">=18.0.0"
+  }
+}

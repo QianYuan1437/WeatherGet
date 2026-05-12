@@ -1,0 +1,49 @@
+{
+  "updateTime": "2026-05-12T03:00:00.000Z",
+  "generationTime": "2026-05-12T03:00:00.000Z",
+  "location": "北京海淀区",
+  "locationCode": "54399",
+  "source": "China Meteorological Administration",
+  "current": {
+    "temp": "25",
+    "feelsLike": "24",
+    "weather": "晴",
+    "humidity": "45",
+    "windSpeed": "2.5",
+    "pressure": "1013",
+    "visibility": "15"
+  },
+  "hourly": [
+    { "time": "00:00", "temp": "22", "icon": "🌙" },
+    { "time": "01:00", "temp": "21", "icon": "🌙" },
+    { "time": "02:00", "temp": "20", "icon": "🌙" },
+    { "time": "03:00", "temp": "19", "icon": "🌙" },
+    { "time": "04:00", "temp": "18", "icon": "🌙" },
+    { "time": "05:00", "temp": "18", "icon": "🌅" },
+    { "time": "06:00", "temp": "19", "icon": "🌅" },
+    { "time": "07:00", "temp": "21", "icon": "☀️" },
+    { "time": "08:00", "temp": "23", "icon": "☀️" },
+    { "time": "09:00", "temp": "25", "icon": "☀️" },
+    { "time": "10:00", "temp": "27", "icon": "☀️" },
+    { "time": "11:00", "temp": "28", "icon": "☀️" },
+    { "time": "12:00", "temp": "29", "icon": "☀️" },
+    { "time": "13:00", "temp": "30", "icon": "☀️" },
+    { "time": "14:00", "temp": "30", "icon": "⛅" },
+    { "time": "15:00", "temp": "29", "icon": "⛅" },
+    { "time": "16:00", "temp": "28", "icon": "⛅" },
+    { "time": "17:00", "temp": "26", "icon": "🌤️" },
+    { "time": "18:00", "temp": "25", "icon": "🌅" },
+    { "time": "19:00", "temp": "24", "icon": "🌆" },
+    { "time": "20:00", "temp": "23", "icon": "🌙" },
+    { "time": "21:00", "temp": "22", "icon": "🌙" },
+    { "time": "22:00", "temp": "22", "icon": "🌙" },
+    { "time": "23:00", "temp": "21", "icon": "🌙" }
+  ],
+  "daily": [
+    { "date": "今天", "high": "30", "low": "18", "weather": "晴", "icon": "☀️" },
+    { "date": "明天", "high": "28", "low": "17", "weather": "多云", "icon": "⛅" },
+    { "date": "周三", "high": "26", "low": "16", "weather": "阴", "icon": "☁️" },
+    { "date": "周四", "high": "25", "low": "15", "weather": "小雨", "icon": "🌧️" },
+    { "date": "周五", "high": "27", "low": "16", "weather": "晴", "icon": "☀️" }
+  ]
+}

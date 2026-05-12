@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>北京海淀区天气预报</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@300;400;500;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+    <div class="container">
+        <!-- 顶部工具栏 -->
+        <header class="header">
+            <div class="location">
+                <span class="icon">📍</span>
+                <span class="location-text" data-zh="北京海淀区" data-en="Haidian District, Beijing">北京海淀区</span>
+            </div>
+            <div class="controls">
+                <button class="btn theme-toggle" id="themeToggle" title="切换主题">
+                    <span class="theme-icon">🌙</span>
+                </button>
+                <button class="btn lang-toggle" id="langToggle" title="切换语言">
+                    <span class="lang-text">EN</span>
+                </button>
+            </div>
+        </header>
+
+        <!-- 更新时间 -->
+        <div class="update-time" id="updateTime">
+            <span data-zh="数据更新时间" data-en="Data Update Time">数据更新时间</span>: 
+            <span id="updateTimeValue">--</span>
+        </div>
+
+        <!-- 主要天气卡片 -->
+        <div class="weather-main card">
+            <div class="weather-icon-large" id="weatherIcon">☀️</div>
+            <div class="temperature">
+                <span id="temp">--</span><span class="unit">°C</span>
+            </div>
+            <div class="weather-desc" id="weatherDesc" data-zh="晴" data-en="Sunny">晴</div>
+            <div class="weather-detail">
+                <span data-zh="体感温度" data-en="Feels Like">体感温度</span>: 
+                <span id="feelsLike">--</span>°C
+            </div>
+        </div>
+
+        <!-- 详细信息卡片 -->
+        <div class="weather-details">
+            <div class="detail-card card">
+                <div class="detail-icon">💧</div>
+                <div class="detail-label" data-zh="湿度" data-en="Humidity">湿度</div>
+                <div class="detail-value" id="humidity">--%</div>
+            </div>
+            <div class="detail-card card">
+                <div class="detail-icon">💨</div>
+                <div class="detail-label" data-zh="风速" data-en="Wind Speed">风速</div>
+                <div class="detail-value" id="windSpeed">-- m/s</div>
+            </div>
+            <div class="detail-card card">
+                <div class="detail-icon">🌡️</div>
+                <div class="detail-label" data-zh="气压" data-en="Pressure">气压</div>
+                <div class="detail-value" id="pressure">-- hPa</div>
+            </div>
+            <div class="detail-card card">
+                <div class="detail-icon">👁️</div>
+                <div class="detail-label" data-zh="能见度" data-en="Visibility">能见度</div>
+                <div class="detail-value" id="visibility">-- km</div>
+            </div>
+        </div>
+
+        <!-- 24小时预报 -->
+        <div class="forecast-section card">
+            <h3 class="section-title" data-zh="24小时预报" data-en="24-Hour Forecast">24小时预报</h3>
+            <div class="forecast-scroll" id="hourlyForecast">
+                <!-- 动态生成 -->
+            </div>
+        </div>
+
+        <!-- 未来几天预报 -->
+        <div class="forecast-section card">
+            <h3 class="section-title" data-zh="未来天气预报" data-en="5-Day Forecast">未来天气预报</h3>
+            <div class="daily-forecast" id="dailyForecast">
+                <!-- 动态生成 -->
+            </div>
+        </div>
+
+        <!-- 数据来源 -->
+        <footer class="footer">
+            <p data-zh="数据来源：中国气象局" data-en="Data Source: China Meteorological Administration">数据来源：中国气象局</p>
+            <p class="auto-update" data-zh="自动更新：每1小时" data-en="Auto Update: Every Hour">自动更新：每1小时</p>
+        </footer>
+    </div>
+
+    <script src="js/main.js"></script>
+</body>
+</html>
