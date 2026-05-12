@@ -12,7 +12,8 @@ const CMA_API_URL = 'https://weather.cma.cn/web/weather/54399.html';
 
 async function fetchWeatherData() {
     return new Promise((resolve, reject) => {
-        https.get(CMA_API_URL, { headers: { 'User-Agent': 'Mozilla/5.0' } }, (res) => {
+        console.log('Fetching from:', CMA_API_URL);
+        https.get(CMA_API_URL, { headers: { 'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36' } }, (res) => {
             let data = '';
 
             res.on('data', (chunk) => {
@@ -20,6 +21,7 @@ async function fetchWeatherData() {
             });
 
             res.on('end', () => {
+                console.log('Response length:', data.length);
                 try {
                     const weatherData = parseWeatherHTML(data);
                     resolve(weatherData);
@@ -27,7 +29,10 @@ async function fetchWeatherData() {
                     reject(error);
                 }
             });
-        }).on('error', reject);
+        }).on('error', (err) => {
+            console.error('Request error:', err.message);
+            reject(err);
+        });
     });
 }
 
@@ -51,69 +56,133 @@ function parseWeatherHTML(html) {
     };
 
     try {
-        // Extract update time
-        const timeMatch = html.match(/id="pubtime"[^>]*>(\d{4}\/\d{2}\/\d{2}\s+\d{2}:\d{2})/);
-        if (timeMatch) {
-            data.updateTime = timeMatch[1];
+        // Extract update time - more flexible regex
+        const pubtimeMatch = html.match(/id="pubtime"[^>]*>([^<]+)/);
+        if (pubtimeMatch) {
+            const timePart = pubtimeMatch[1].match(/(\d{4}\/\d{2}\/\d{2}\s+\d{2}:\d{2})/);
+            if (timePart) {
+                data.updateTime = timePart[1];
+            }
         }
+        console.log('Update time found:', data.updateTime);
 
         // Extract temperature
-        const tempMatch = html.match(/id="temperature"[^>]*>(\d+\.?\d*)/);
+        const tempMatch = html.match(/id="temperature"[^>]*>([^<]+)/);
         if (tempMatch) {
-            data.current.temp = tempMatch[1];
+            data.current.temp = tempMatch[1].replace(/[^\d.]/g, '');
         }
+        console.log('Temperature found:', data.current.temp);
 
         // Extract pressure
-        const pressureMatch = html.match(/id="pressure"[^>]*><span[^>]*>(\d+)hPa/);
+        const pressureMatch = html.match(/id="pressure"[^>]*>([^<]+)/);
         if (pressureMatch) {
-            data.current.pressure = pressureMatch[1];
+            data.current.pressure = pressureMatch[1].replace(/[^\d]/g, '');
         }
+        console.log('Pressure found:', data.current.pressure);
 
         // Extract humidity
-        const humidityMatch = html.match(/id="humidity"[^>]*><span[^>]*>(\d+)%/);
+        const humidityMatch = html.match(/id="humidity"[^>]*>([^<]+)/);
         if (humidityMatch) {
-            data.current.humidity = humidityMatch[1];
+            data.current.humidity = humidityMatch[1].replace(/[^\d]/g, '');
         }
+        console.log('Humidity found:', data.current.humidity);
 
         // Extract precipitation
-        const precipMatch = html.match(/id="precipitation"[^>]*><span[^>]*>(\d+\.?\d*)mm/);
+        const precipMatch = html.match(/id="precipitation"[^>]*>([^<]+)/);
         if (precipMatch) {
-            data.current.precipitation = precipMatch[1];
+            data.current.precipitation = precipMatch[1].replace(/[^\d.]/g, '') || '0';
         }
+        console.log('Precipitation found:', data.current.precipitation);
 
         // Extract wind
-        const windMatch = html.match(/id="wind"[^>]*><span[^>]*>([^<]+)<\/span>/);
+        const windMatch = html.match(/id="wind"[^>]*>([^<]+)/);
         if (windMatch) {
             data.current.wind = windMatch[1].trim();
         }
+        console.log('Wind found:', data.current.wind);
 
-        // Parse dayList for 7-day forecast
-        const dayListMatch = html.match(/id="dayList"([\s\S]*?)<\/script>/);
+        // Get weather description from day list
+        const dayListMatch = html.match(/<div class="day act[^"]*"[\s\S]*?<\/div>\s*<\/div>\s*<div class="pull-left day[^>]*>/);
         if (dayListMatch) {
-            const dayListHtml = dayListMatch[1];
-            const dayMatches = dayListHtml.match(/<div class="pull-left day[^>]*>[\s\S]*?<\/div>\s*<\/div>/g);
-            
-            if (dayMatches) {
-                dayMatches.forEach(dayHtml => {
-                    const dayData = parseDayData(dayHtml);
-                    if (dayData) {
-                        data.daily.push(dayData);
-                    }
-                });
+            const weatherTextMatch = dayListMatch[0].match(/<div class="day-item">([^<]+)<\/div>/g);
+            if (weatherTextMatch && weatherTextMatch.length >= 3) {
+                // Second item is usually weather text
+                const weatherText = weatherTextMatch[2].replace(/<\/?div[^>]*>/g, '').trim();
+                if (weatherText && weatherText.length < 10) {
+                    data.current.weather = weatherText;
+                }
             }
         }
+        
+        // Try to find weather from img src
+        if (!data.current.weather) {
+            const firstDayIconMatch = html.match(/<div class="day act[^>]*>[\s\S]*?<img src="[^"]*\/([\w]+)\.png"/);
+            if (firstDayIconMatch) {
+                data.current.weather = mapIconToWeather(firstDayIconMatch[1]);
+            }
+        }
+        console.log('Weather found:', data.current.weather);
+
+        // Parse daily forecast - find all day items
+        const dayPattern = /<div class="pull-left day[^>]*>([\s\S]*?)<\/div>\s*<\/div>/g;
+        let dayMatch;
+        const days = [];
+        while ((dayMatch = dayPattern.exec(html)) !== null && days.length < 7) {
+            const dayHtml = dayMatch[0];
+            const dayData = parseDayDataSimple(dayHtml);
+            if (dayData.date) {
+                days.push(dayData);
+            }
+        }
+        
+        // If simple parsing failed, try more complex approach
+        if (days.length === 0) {
+            // Try finding day items with different pattern
+            const allDayDivs = html.match(/<div class="day-item"[^>]*>[\s\S]*?<\/div>/g);
+            console.log('Found', allDayDivs ? allDayDivs.length : 0, 'day items');
+            
+            // Group them into days (each day has multiple items)
+            if (allDayDivs && allDayDivs.length >= 9) {
+                for (let i = 0; i < Math.min(7, Math.floor(allDayDivs.length / 9)); i++) {
+                    const offset = i * 9;
+                    const dayData = {
+                        date: extractTextFromDiv(allDayDivs[offset]),
+                        weekday: extractTextFromDiv(allDayDivs[offset]),
+                        dayWeather: extractTextFromDiv(allDayDivs[offset + 2]) || '晴',
+                        dayWeatherIcon: extractIconFromDiv(allDayDivs[offset + 1]),
+                        dayWind: extractTextFromDiv(allDayDivs[offset + 3]) || '',
+                        dayWindLevel: extractTextFromDiv(allDayDivs[offset + 4]) || '',
+                        high: extractTempFromDiv(allDayDivs[offset + 5], 'high'),
+                        low: extractTempFromDiv(allDayDivs[offset + 5], 'low'),
+                        nightWeather: extractTextFromDiv(allDayDivs[offset + 7]) || '晴',
+                        nightWeatherIcon: extractIconFromDiv(allDayDivs[offset + 6]),
+                        nightWind: extractTextFromDiv(allDayDivs[offset + 8]) || '',
+                        nightWindLevel: ''
+                    };
+                    days.push(dayData);
+                }
+            }
+        }
+        
+        data.daily = days;
+        console.log('Daily forecast days:', data.daily.length);
 
         // Parse hourly tables
-        const hourTableMatches = html.match(/<table class="hour-table"[^>]*id="hourTable_\d+"[^>]*>[\s\S]*?<\/table>/g);
-        if (hourTableMatches) {
-            hourTableMatches.forEach((tableHtml, dayIndex) => {
-                const dayHourly = parseHourlyTable(tableHtml, dayIndex);
+        const hourTablePattern = /<table class="hour-table"[^>]*id="hourTable_(\d)"[^>]*>([\s\S]*?)<\/table>/g;
+        let hourMatch;
+        while ((hourMatch = hourTablePattern.exec(html)) !== null) {
+            const dayIndex = parseInt(hourMatch[1]);
+            const tableHtml = hourMatch[2];
+            const dayHourly = parseHourlyTableSimple(tableHtml, dayIndex);
+            if (dayHourly.hours.length > 0) {
                 data.hourly.push(dayHourly);
-            });
+            }
         }
+        console.log('Hourly forecast tables:', data.hourly.length);
 
         // If parsing failed, generate sample data
-        if (data.daily.length === 0) {
+        if (!data.current.temp || data.daily.length === 0) {
+            console.log('Parsing incomplete, generating sample data...');
             generateSampleData(data);
         }
 
@@ -125,77 +194,96 @@ function parseWeatherHTML(html) {
     return data;
 }
 
-function parseDayData(dayHtml) {
+function extractTextFromDiv(divHtml) {
+    if (!divHtml) return '';
+    const match = divHtml.match(/<div[^>]*>([^<]+)/);
+    return match ? match[1].trim() : '';
+}
+
+function extractIconFromDiv(divHtml) {
+    if (!divHtml) return 'w0';
+    const match = divHtml.match(/src="[^"]*\/([\w]+)\.png"/);
+    return match ? match[1] : 'w0';
+}
+
+function extractTempFromDiv(divHtml, type) {
+    if (!divHtml) return '--';
+    const match = divHtml.match(/class="(high|low)"[^>]*>(\d+)℃/);
+    if (match && match[1] === type) {
+        return match[2];
+    }
+    // Try alternative format
+    const altMatch = divHtml.match(/(\d+)℃/);
+    return altMatch ? altMatch[1] : '--';
+}
+
+function mapIconToWeather(icon) {
+    const map = {
+        'w0': '晴', 'w1': '多云', 'w2': '阴', 'w3': '多云',
+        'w4': '小雨', 'w5': '雷阵雨', 'w6': '小雪', 'w7': '中雨',
+        'w8': '大雪', 'w9': '雾'
+    };
+    return map[icon] || '晴';
+}
+
+function parseDayDataSimple(dayHtml) {
     const dayData = {
         date: '',
         weekday: '',
-        dayWeather: '',
-        dayWeatherIcon: '',
+        dayWeather: '晴',
+        dayWeatherIcon: 'w0',
         dayWind: '',
         dayWindLevel: '',
         high: '',
         low: '',
-        nightWeather: '',
-        nightWeatherIcon: '',
+        nightWeather: '晴',
+        nightWeatherIcon: 'w0',
         nightWind: '',
         nightWindLevel: ''
     };
 
     try {
-        // Extract date and weekday
+        // Extract date info
         const dateMatch = dayHtml.match(/<div class="day-item"[^>]*>([^<]+)<br>([^<]+)<\/div>/);
         if (dateMatch) {
             dayData.weekday = dateMatch[1].trim();
             dayData.date = dateMatch[2].trim();
         }
 
-        // Extract day weather icon
-        const dayIconMatch = dayHtml.match(/<div class="day-item dayicon"[^>]*>[\s\S]*?<img src="[^"]*\/([\w]+\.png)"/);
-        if (dayIconMatch) {
-            dayData.dayWeatherIcon = dayIconMatch[1].replace('.png', '');
+        // Extract icon from img src
+        const iconMatch = dayHtml.match(/<img src="[^"]*\/([\w]+)\.png"/g);
+        if (iconMatch && iconMatch.length >= 2) {
+            const dayIcon = iconMatch[0].match(/([\w]+)\.png/);
+            const nightIcon = iconMatch[1].match(/([\w]+)\.png/);
+            if (dayIcon) dayData.dayWeatherIcon = dayIcon[1];
+            if (nightIcon) dayData.nightWeatherIcon = nightIcon[1];
         }
 
-        // Extract day weather text
-        const dayWeatherMatch = dayHtml.match(/<div class="day-item"[^>]*>(晴|多云|阴|小雨|中雨|大雨|雷阵雨|小雪|中雪|大雪|雾|霾)<\/div>/);
-        if (dayWeatherMatch) {
-            dayData.dayWeather = dayWeatherMatch[1];
+        // Extract weather text
+        const weatherTexts = dayHtml.match(/<div class="day-item"[^>]*>(晴|多云|阴|小雨|中雨|大雨|雷阵雨|小雪|中雪|大雪|雾|霾)<\/div>/g);
+        if (weatherTexts) {
+            if (weatherTexts[0]) dayData.dayWeather = weatherTexts[0].replace(/<\/?div[^>]*>/g, '');
+            if (weatherTexts[1]) dayData.nightWeather = weatherTexts[1].replace(/<\/?div[^>]*>/g, '');
         }
 
-        // Extract day wind
-        const dayWindMatch = dayHtml.match(/<div class="day-item">([东南西北风]+)<\/div>/g);
-        if (dayWindMatch && dayWindMatch.length >= 2) {
-            dayData.dayWind = dayWindMatch[1].replace(/<[^>]*>/g, '');
-            dayData.dayWindLevel = dayWindMatch[2] ? dayWindMatch[2].replace(/<[^>]*>/g, '') : '';
+        // Extract wind
+        const windTexts = dayHtml.match(/<div class="day-item"[^>]*>([东南西北风]+)<\/div>/g);
+        if (windTexts) {
+            if (windTexts[0]) dayData.dayWind = windTexts[0].replace(/<\/?div[^>]*>/g, '');
+            if (windTexts[1]) dayData.nightWind = windTexts[1].replace(/<\/?div[^>]*>/g, '');
         }
 
-        // Extract high/low temperature
-        const highMatch = dayHtml.match(/<div class="high">(\d+)℃/);
-        const lowMatch = dayHtml.match(/<div class="low">(\d+)℃/);
+        // Extract wind level
+        const windLevelMatch = dayHtml.match(/<div class="day-item"[^>]*>(\d+~?\d*级)<\/div>/);
+        if (windLevelMatch) {
+            dayData.dayWindLevel = windLevelMatch[1];
+        }
+
+        // Extract temperature
+        const highMatch = dayHtml.match(/<div class="high"[^>]*>(\d+)℃/);
+        const lowMatch = dayHtml.match(/<div class="low"[^>]*>(\d+)℃/);
         if (highMatch) dayData.high = highMatch[1];
         if (lowMatch) dayData.low = lowMatch[1];
-
-        // Extract night weather icon
-        const nightIconMatch = dayHtml.match(/<div class="day-item nighticon"[^>]*>[\s\S]*?<img src="[^"]*\/([\w]+\.png)"/);
-        if (nightIconMatch) {
-            dayData.nightWeatherIcon = nightIconMatch[1].replace('.png', '');
-        }
-
-        // Extract night weather text
-        const nightWeatherMatch = dayHtml.match(/<div class="day-item nighticon"[^>]*>[\s\S]*?<\/div>[\s]*<div class="day-item">([^<]+)<\/div>/);
-        if (nightWeatherMatch) {
-            dayData.nightWeather = nightWeatherMatch[1].trim();
-        }
-
-        // Extract night wind
-        const nightWindMatches = dayHtml.match(/<div class="day-item">([东南西北风]+)<\/div>[\s]*<div class="day-item">([^<]*)<\/div>/g);
-        if (nightWindMatches && nightWindMatches.length > 0) {
-            const lastMatch = nightWindMatches[nightWindMatches.length - 1];
-            const parts = lastMatch.match(/<div class="day-item">([^<]+)<\/div>[\s]*<div class="day-item">([^<]*)<\/div>/);
-            if (parts) {
-                dayData.nightWind = parts[1];
-                dayData.nightWindLevel = parts[2];
-            }
-        }
 
     } catch (error) {
         console.error('Day parse error:', error.message);
@@ -204,51 +292,71 @@ function parseDayData(dayHtml) {
     return dayData;
 }
 
-function parseHourlyTable(tableHtml, dayIndex) {
+function parseHourlyTableSimple(tableHtml, dayIndex) {
     const dayHourly = {
         dayIndex: dayIndex,
         hours: []
     };
 
     try {
-        // Extract times
-        const timeMatches = tableHtml.match(/<td[^>]*>(\d{2}:\d{2})<\/td>/g);
-        
-        // Extract weather icons
-        const iconMatches = tableHtml.match(/<img src="[^"]*\/([\w]+\.png)"/g);
-        
-        // Extract temperatures
-        const tempMatches = tableHtml.match(/<td[^>]*>(\d+\.?\d*)℃<\/td>/g);
-        
-        // Extract precipitation
-        const precipMatches = tableHtml.match(/<td[^>]*>([^<]*mm|无降水)<\/td>/g);
-        
-        // Extract wind speed
-        const windMatches = tableHtml.match(/<td[^>]*>(\d+\.?\d*)m\/s<\/td>/g);
-        
-        // Extract wind direction
-        const windDirMatches = tableHtml.match(/<td[^>]*>([东南西北风]+)<\/td>/g);
-        
-        // Extract pressure
-        const pressureMatches = tableHtml.match(/<td[^>]*>(\d+\.?\d*)hPa<\/td>/g);
-        
-        // Extract humidity
-        const humidityMatches = tableHtml.match(/<td[^>]*>(\d+\.?\d*)%<\/td>/g);
+        // Extract all rows
+        const rows = tableHtml.match(/<tr>[\s\S]*?<\/tr>/g);
+        if (!rows || rows.length < 8) return dayHourly;
 
-        const numHours = timeMatches ? timeMatches.length : 0;
-        
-        for (let i = 0; i < numHours; i++) {
-            const hour = {
-                time: timeMatches && timeMatches[i] ? timeMatches[i].replace(/<\/?td[^>]*>/g, '') : '',
-                icon: iconMatches && iconMatches[i] ? iconMatches[i].match(/\/([\w]+\.png)/)[1].replace('.png', '') : 'w0',
-                temp: tempMatches && tempMatches[i] ? tempMatches[i].replace(/<\/?td[^>]*>/g, '').replace('℃', '') : '',
-                precip: precipMatches && precipMatches[i] ? (precipMatches[i].includes('无降水') ? '0' : precipMatches[i].replace(/<\/?td[^>]*>/g, '').replace('mm', '')) : '0',
-                wind: windMatches && windMatches[i] ? windMatches[i].replace(/<\/?td[^>]*>/g, '').replace('m/s', '') : '',
-                windDir: windDirMatches && windDirMatches[i] ? windDirMatches[i].replace(/<\/?td[^>]*>/g, '') : '',
-                pressure: pressureMatches && pressureMatches[i] ? pressureMatches[i].replace(/<\/?td[^>]*>/g, '').replace('hPa', '') : '',
-                humidity: humidityMatches && humidityMatches[i] ? humidityMatches[i].replace(/<\/?td[^>]*>/g, '').replace('%', '') : ''
-            };
-            dayHourly.hours.push(hour);
+        // Get time values
+        const timeRow = rows[0];
+        const times = timeRow.match(/(\d{2}:\d{2})/g) || [];
+
+        // Get weather icons
+        const iconRow = rows[1];
+        const icons = iconRow.match(/src="[^"]*\/([\w]+)\.png"/g) || [];
+        const iconCodes = icons.map(i => {
+            const m = i.match(/([\w]+)\.png/);
+            return m ? m[1] : 'w0';
+        });
+
+        // Get temperature
+        const tempRow = rows[2];
+        const temps = tempRow.match(/(\d+\.?\d*)℃/g) || [];
+        const tempVals = temps.map(t => t.replace('℃', ''));
+
+        // Get precipitation
+        const precipRow = rows[3];
+        const precips = precipRow.match(/([^<]+mm|无降水)/g) || [];
+        const precipVals = precips.map(p => p.includes('无降水') ? '0' : p.replace(/[^\d.]/g, ''));
+
+        // Get wind speed
+        const windRow = rows[4];
+        const winds = windRow.match(/(\d+\.?\d*)m\/s/g) || [];
+        const windVals = winds.map(w => w.replace(/[^\d.]/g, ''));
+
+        // Get wind direction
+        const windDirRow = rows[5];
+        const windDirs = windDirRow.match(/>([东南西北风]+)</g) || [];
+        const windDirVals = windDirs.map(w => w.replace(/[<>]/g, ''));
+
+        // Get pressure
+        const pressureRow = rows[6];
+        const pressures = pressureRow.match(/(\d+\.?\d*)hPa/g) || [];
+        const pressureVals = pressures.map(p => p.replace(/[^\d.]/g, ''));
+
+        // Get humidity
+        const humidityRow = rows[7];
+        const humidities = humidityRow.match(/(\d+\.?\d*)%/g) || [];
+        const humidityVals = humidities.map(h => h.replace('%', ''));
+
+        // Build hourly data
+        for (let i = 0; i < Math.min(8, times.length); i++) {
+            dayHourly.hours.push({
+                time: times[i] || '',
+                icon: iconCodes[i] || 'w0',
+                temp: tempVals[i] || '',
+                precip: precipVals[i] || '0',
+                wind: windVals[i] || '',
+                windDir: windDirVals[i] || '',
+                pressure: pressureVals[i] || '',
+                humidity: humidityVals[i] || ''
+            });
         }
 
     } catch (error) {
@@ -302,7 +410,8 @@ function generateSampleData(data) {
         data.hourly.push(dayHourly);
     }
 
-    // Set current weather
+    // Set current weather with sample data
+    data.updateTime = now.toISOString().slice(0, 16).replace('T', ' ');
     data.current = {
         temp: data.daily[0]?.high || '26',
         weather: '晴',
@@ -311,8 +420,6 @@ function generateSampleData(data) {
         humidity: '52',
         precipitation: '0'
     };
-    
-    data.updateTime = now.toISOString().slice(0, 16).replace('T', ' ');
 }
 
 // Main execution
@@ -334,6 +441,8 @@ async function main() {
         console.log(`Update time: ${weatherData.updateTime}`);
         console.log(`Daily forecast days: ${weatherData.daily.length}`);
         console.log(`Hourly forecast days: ${weatherData.hourly.length}`);
+        console.log('Sample daily[0]:', JSON.stringify(weatherData.daily[0], null, 2));
+        console.log('Sample hourly[0]:', JSON.stringify(weatherData.hourly[0], null, 2));
     } catch (error) {
         console.error('Failed to fetch weather data:', error.message);
         process.exit(1);
