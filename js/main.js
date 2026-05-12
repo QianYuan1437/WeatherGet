@@ -135,6 +135,9 @@ function updateLanguageUI() {
         updateDailyForecast(weatherData.daily || []);
         updateDayTabs();
         updateHourlyTableIfDataAvailable();
+        if (weatherData.daily && weatherData.daily.length > 0) {
+            drawTempChart(weatherData.daily);
+        }
     }
 }
 
@@ -249,6 +252,11 @@ function updateWeatherDisplay(data) {
     }
     
     updateHourlyTableIfDataAvailable();
+    
+    // Draw temperature chart
+    if (data.daily && data.daily.length > 0) {
+        drawTempChart(data.daily);
+    }
 }
 
 // Helper to update hourly table if data is available
@@ -407,4 +415,118 @@ if (typeof window !== 'undefined') {
         weatherIcons,
         weatherDescMap
     };
+}
+
+// Temperature Chart Rendering
+function drawTempChart(dailyData) {
+    const canvas = document.getElementById('tempChart');
+    if (!canvas || !dailyData || dailyData.length === 0) return;
+    
+    const ctx = canvas.getContext('2d');
+    const width = canvas.width;
+    const height = canvas.height;
+    const padding = { top: 20, right: 20, bottom: 30, left: 30 };
+    
+    // Clear canvas
+    ctx.clearRect(0, 0, width, height);
+    
+    // Get min/max temperatures
+    const temps = dailyData.map(d => ({ high: parseInt(d.high), low: parseInt(d.low) }));
+    const allTemps = temps.flatMap(t => [t.high, t.low]);
+    const minTemp = Math.min(...allTemps) - 2;
+    const maxTemp = Math.max(...allTemps) + 2;
+    const tempRange = maxTemp - minTemp;
+    
+    const chartWidth = width - padding.left - padding.right;
+    const chartHeight = height - padding.top - padding.bottom;
+    
+    // Helper function to convert temperature to Y coordinate
+    function tempToY(temp) {
+        return padding.top + chartHeight - ((temp - minTemp) / tempRange) * chartHeight;
+    }
+    
+    // Helper function to convert day index to X coordinate
+    function dayToX(index) {
+        return padding.left + (index / (dailyData.length - 1)) * chartWidth;
+    }
+    
+    // Draw grid lines
+    ctx.strokeStyle = 'rgba(128, 128, 128, 0.2)';
+    ctx.lineWidth = 1;
+    const gridCount = 4;
+    for (let i = 0; i <= gridCount; i++) {
+        const y = padding.top + (i / gridCount) * chartHeight;
+        ctx.beginPath();
+        ctx.moveTo(padding.left, y);
+        ctx.lineTo(width - padding.right, y);
+        ctx.stroke();
+        
+        // Draw temperature labels
+        const temp = Math.round(maxTemp - (i / gridCount) * tempRange);
+        ctx.fillStyle = 'rgba(128, 128, 128, 0.6)';
+        ctx.font = '10px Noto Sans SC, sans-serif';
+        ctx.textAlign = 'right';
+        ctx.fillText(temp + '°', padding.left - 5, y + 3);
+    }
+    
+    // Draw day labels
+    ctx.fillStyle = 'rgba(128, 128, 128, 0.6)';
+    ctx.font = '10px Noto Sans SC, sans-serif';
+    ctx.textAlign = 'center';
+    dailyData.forEach((day, i) => {
+        const x = dayToX(i);
+        const label = day.weekday ? day.weekday.substring(0, 2) : (day.date || '').split('/')[1];
+        ctx.fillText(label, x, height - 5);
+    });
+    
+    // Draw high temperature line (red)
+    ctx.strokeStyle = '#ff5252';
+    ctx.lineWidth = 2;
+    ctx.beginPath();
+    ctx.setLineDash([]);
+    temps.forEach((t, i) => {
+        const x = dayToX(i);
+        const y = tempToY(t.high);
+        if (i === 0) {
+            ctx.moveTo(x, y);
+        } else {
+            ctx.lineTo(x, y);
+        }
+    });
+    ctx.stroke();
+    
+    // Draw high temp dots
+    ctx.fillStyle = '#ff5252';
+    temps.forEach((t, i) => {
+        const x = dayToX(i);
+        const y = tempToY(t.high);
+        ctx.beginPath();
+        ctx.arc(x, y, 4, 0, Math.PI * 2);
+        ctx.fill();
+    });
+    
+    // Draw low temperature line (blue)
+    ctx.strokeStyle = '#448aff';
+    ctx.lineWidth = 2;
+    ctx.beginPath();
+    temps.forEach((t, i) => {
+        const x = dayToX(i);
+        const y = tempToY(t.low);
+        if (i === 0) {
+            ctx.moveTo(x, y);
+        } else {
+            ctx.lineTo(x, y);
+        }
+    });
+    ctx.stroke();
+    
+    // Draw low temp dots
+    ctx.fillStyle = '#448aff';
+    temps.forEach((t, i) => {
+        const x = dayToX(i);
+        const y = tempToY(t.low);
+        ctx.beginPath();
+        ctx.arc(x, y, 4, 0, Math.PI * 2);
+        ctx.fill();
+    });
 }

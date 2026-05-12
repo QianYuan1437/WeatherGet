@@ -117,9 +117,10 @@ body {
 /* Current Weather Section - More Compact */
 .current-weather-section {
     display: grid;
-    grid-template-columns: 1fr 1fr 1fr;
+    grid-template-columns: 1fr 1fr 1fr 2fr;
     gap: 15px;
     margin-bottom: 15px;
+    align-items: stretch;
 }
 
 .current-main {
@@ -172,6 +173,55 @@ body {
     display: flex;
     flex-direction: column;
     gap: 10px;
+}
+
+/* Temperature Chart Styles */
+.temp-chart-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 15px;
+}
+
+.chart-title {
+    font-size: 0.9rem;
+    font-weight: 500;
+    color: var(--text-primary);
+    margin-bottom: 10px;
+}
+
+#tempChart {
+    width: 100%;
+    max-width: 500px;
+    height: 150px;
+    border-radius: 8px;
+}
+
+.chart-legend {
+    display: flex;
+    gap: 20px;
+    margin-top: 10px;
+    font-size: 0.8rem;
+}
+
+.legend-item {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+}
+
+.legend-dot {
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+}
+
+.high-temp .legend-dot {
+    background: #ff5252;
+}
+
+.low-temp .legend-dot {
+    background: #448aff;
 }
 
 .detail-item {
@@ -373,6 +423,10 @@ body {
     .current-weather-section {
         grid-template-columns: 1fr 1fr;
     }
+    
+    .temp-chart-container {
+        grid-column: span 2;
+    }
 }
 
 @media (max-width: 768px) {
@@ -383,6 +437,10 @@ body {
 
     .current-weather-section {
         grid-template-columns: 1fr;
+    }
+    
+    .temp-chart-container {
+        grid-column: span 1;
     }
 
     .current-main {

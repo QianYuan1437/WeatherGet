@@ -62,6 +62,16 @@
                     <div class="detail-value" id="precipitation">-- mm</div>
                 </div>
             </div>
+
+            <!-- 7天温度曲线图 -->
+            <div class="temp-chart-container card">
+                <div class="chart-title" data-zh="一周温度趋势" data-en="Weekly Temperature Trend">一周温度趋势</div>
+                <canvas id="tempChart" width="400" height="150"></canvas>
+                <div class="chart-legend">
+                    <span class="legend-item high-temp"><span class="legend-dot"></span><span data-zh="最高温" data-en="High">最高温</span></span>
+                    <span class="legend-item low-temp"><span class="legend-dot"></span><span data-zh="最低温" data-en="Low">最低温</span></span>
+                </div>
+            </div>
         </div>
 
         <!-- 7天天气预报 -->
