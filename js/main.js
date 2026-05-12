@@ -423,9 +423,23 @@ function drawTempChart(dailyData) {
     if (!canvas || !dailyData || dailyData.length === 0) return;
     
     const ctx = canvas.getContext('2d');
-    const width = canvas.width;
-    const height = canvas.height;
-    const padding = { top: 20, right: 20, bottom: 30, left: 30 };
+    
+    // Set actual display size
+    const rect = canvas.getBoundingClientRect();
+    const displayWidth = rect.width || 400;
+    const displayHeight = rect.height || 150;
+    
+    // Set canvas resolution to match display
+    const dpr = window.devicePixelRatio || 1;
+    canvas.width = displayWidth * dpr;
+    canvas.height = displayHeight * dpr;
+    canvas.style.width = displayWidth + 'px';
+    canvas.style.height = displayHeight + 'px';
+    ctx.scale(dpr, dpr);
+    
+    const width = displayWidth;
+    const height = displayHeight;
+    const padding = { top: 20, right: 15, bottom: 25, left: 30 };
     
     // Clear canvas
     ctx.clearRect(0, 0, width, height);
@@ -447,7 +461,7 @@ function drawTempChart(dailyData) {
     
     // Helper function to convert day index to X coordinate
     function dayToX(index) {
-        return padding.left + (index / (dailyData.length - 1)) * chartWidth;
+        return padding.left + (index / Math.max(dailyData.length - 1, 1)) * chartWidth;
     }
     
     // Draw grid lines

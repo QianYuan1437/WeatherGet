@@ -171,8 +171,8 @@ body {
 
 .current-details {
     display: flex;
-    flex-direction: column;
-    gap: 10px;
+    flex-direction: row;
+    gap: 8px;
 }
 
 /* Temperature Chart Styles */
@@ -195,6 +195,11 @@ body {
     max-width: 500px;
     height: 150px;
     border-radius: 8px;
+    background: rgba(255, 255, 255, 0.5);
+}
+
+[data-theme="dark"] #tempChart {
+    background: rgba(30, 30, 50, 0.5);
 }
 
 .chart-legend {
@@ -226,12 +231,13 @@ body {
 
 .detail-item {
     text-align: center;
-    padding: 12px 10px;
+    padding: 10px 6px;
     margin-bottom: 0;
     display: flex;
     flex-direction: column;
     align-items: center;
     flex: 1;
+    min-width: 0;
 }
 
 .detail-item .detail-icon {
