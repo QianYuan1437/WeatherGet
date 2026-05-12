@@ -3,11 +3,9 @@ name: Weather Data Update and Deploy
 on:
   schedule:
     # 每小时执行一次
-    # Run every hour
     - cron: '0 * * * *'
   workflow_dispatch:
     # 允许手动触发
-    # Allow manual trigger
   push:
     branches:
       - main
@@ -22,8 +20,10 @@ concurrency:
   cancel-in-progress: false
 
 jobs:
-  update-weather:
+  update-data:
     runs-on: ubuntu-latest
+    outputs:
+      timestamp: ${{ steps.generate-data.outputs.timestamp }}
     
     steps:
       - name: Checkout repository
@@ -41,18 +41,21 @@ jobs:
           fi
 
       - name: Fetch weather data
+        id: fetch-weather
         run: |
-          node scripts/fetch-weather.js
-        continue-on-error: true
+          if node scripts/fetch-weather.js; then
+            echo "status=success" >> $GITHUB_OUTPUT
+          else
+            echo "status=failed" >> $GITHUB_OUTPUT
+          fi
 
       - name: Generate sample data if fetch fails
-        if: failure()
+        if: steps.fetch-weather.outputs.status == 'failed'
         run: |
           mkdir -p data
-          cat > data/weather.json << EOF
-          {
-            "updateTime": "${{ github.event.head_commit.timestamp }}",
-            "generationTime": "${{ github.event.head_commit.timestamp }}",
+          echo '{
+            "updateTime": "'$(date -u +'%Y-%m-%dT%H:%M:%SZ')'",
+            "generationTime": "'$(date -u +'%Y-%m-%dT%H:%M:%SZ')'",
             "location": "北京海淀区",
             "locationCode": "54399",
             "source": "China Meteorological Administration",
@@ -67,9 +70,11 @@ jobs:
             },
             "hourly": [],
             "daily": []
-          }
-          EOF
-          echo "Generated sample weather data"
+          }' > data/weather.json
+
+      - name: Generate timestamp
+        id: generate-data
+        run: echo "timestamp=$(date -u +'%Y-%m-%dT%H:%M:%SZ')" >> $GITHUB_OUTPUT
 
       - name: Commit and push data
         run: |
@@ -80,7 +85,7 @@ jobs:
           git push
 
   deploy:
-    needs: update-weather
+    needs: update-data
     runs-on: ubuntu-latest
     
     environment:
