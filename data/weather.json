@@ -1,6 +1,6 @@
 {
-  "updateTime": "2026-05-12T03:29:12.948Z",
-  "generationTime": "2026-05-12T03:29:12.948Z",
+  "updateTime": "2026-05-12T03:32:21.489Z",
+  "generationTime": "2026-05-12T03:32:21.489Z",
   "location": "北京海淀区",
   "locationCode": "54399",
   "source": "China Meteorological Administration",
@@ -21,7 +21,7 @@
     },
     {
       "time": "04:00",
-      "temp": "27",
+      "temp": "28",
       "icon": "☀️"
     },
     {
@@ -31,7 +31,7 @@
     },
     {
       "time": "06:00",
-      "temp": "29",
+      "temp": "31",
       "icon": "☀️"
     },
     {
@@ -46,7 +46,7 @@
     },
     {
       "time": "09:00",
-      "temp": "31",
+      "temp": "33",
       "icon": "☀️"
     },
     {
@@ -56,12 +56,12 @@
     },
     {
       "time": "11:00",
-      "temp": "32",
+      "temp": "31",
       "icon": "☀️"
     },
     {
       "time": "12:00",
-      "temp": "31",
+      "temp": "32",
       "icon": "☀️"
     },
     {
@@ -71,12 +71,12 @@
     },
     {
       "time": "14:00",
-      "temp": "28",
+      "temp": "27",
       "icon": "☀️"
     },
     {
       "time": "15:00",
-      "temp": "28",
+      "temp": "26",
       "icon": "☀️"
     },
     {
@@ -101,22 +101,22 @@
     },
     {
       "time": "20:00",
-      "temp": "21",
+      "temp": "20",
       "icon": "☀️"
     },
     {
       "time": "21:00",
-      "temp": "22",
+      "temp": "20",
       "icon": "☀️"
     },
     {
       "time": "22:00",
-      "temp": "22",
+      "temp": "20",
       "icon": "☀️"
     },
     {
       "time": "23:00",
-      "temp": "21",
+      "temp": "23",
       "icon": "☀️"
     },
     {
@@ -131,42 +131,42 @@
     },
     {
       "time": "02:00",
-      "temp": "26",
+      "temp": "24",
       "icon": "☀️"
     }
   ],
   "daily": [
     {
       "date": "今天",
-      "high": "29",
-      "low": "20",
+      "high": "32",
+      "low": "19",
       "weather": "晴",
       "icon": "☀️"
     },
     {
       "date": "明天",
-      "high": "32",
-      "low": "20",
+      "high": "29",
+      "low": "21",
       "weather": "晴",
       "icon": "☀️"
     },
     {
       "date": "周四",
-      "high": "29",
-      "low": "22",
-      "weather": "晴",
-      "icon": "☀️"
-    },
-    {
-      "date": "周五",
       "high": "30",
       "low": "22",
       "weather": "晴",
       "icon": "☀️"
     },
     {
-      "date": "周六",
+      "date": "周五",
       "high": "32",
+      "low": "21",
+      "weather": "晴",
+      "icon": "☀️"
+    },
+    {
+      "date": "周六",
+      "high": "30",
       "low": "20",
       "weather": "晴",
       "icon": "☀️"
