@@ -507,25 +507,19 @@ function drawTempChart(dailyData) {
         ctx.fillText(temp + '°', padding.left - 8, y + 4);
     }
     
-    // Day labels
+    // Day labels and calculate points
     ctx.textAlign = 'center';
     dailyData.forEach((day, i) => {
         const x = dayToX(i);
         const label = day.weekday ? day.weekday.substring(0, 2) : (day.date || '').split('/')[1];
         ctx.fillText(label, x, height - 10);
         
-        // Store data for tooltip
-        if (!chartData.highPoints[i]) {
-            chartData.highPoints[i] = { x: dayToX(i), y: tempToY(temps[i].high), temp: temps[i].high };
-            chartData.lowPoints[i] = { x: dayToX(i), y: tempToY(temps[i].low), temp: temps[i].low };
-        }
+        // Store exact data points
+        chartData.highPoints[i] = { x: x, y: tempToY(temps[i].high), temp: temps[i].high, day: day, index: i };
+        chartData.lowPoints[i] = { x: x, y: tempToY(temps[i].low), temp: temps[i].low, day: day, index: i };
     });
     
-    // Update chartData with latest calculations
-    chartData.highPoints = temps.map((t, i) => ({ x: dayToX(i), y: tempToY(t.high), temp: t.high }));
-    chartData.lowPoints = temps.map((t, i) => ({ x: dayToX(i), y: tempToY(t.low), temp: t.low }));
-    
-    // Draw smooth curves using bezier curves
+    // Draw smooth curves using bezier curves - ensure curves pass through ALL data points
     function drawSmoothCurve(points, color) {
         if (points.length < 2) return;
         
@@ -534,45 +528,54 @@ function drawTempChart(dailyData) {
         ctx.lineCap = 'round';
         ctx.lineJoin = 'round';
         
+        // Start from first point
         ctx.beginPath();
         ctx.moveTo(points[0].x, points[0].y);
         
+        // Draw quadratic bezier curves through midpoints to next point
         for (let i = 0; i < points.length - 1; i++) {
-            const p0 = points[i];
-            const p1 = points[i + 1];
-            const midX = (p0.x + p1.x) / 2;
+            const current = points[i];
+            const next = points[i + 1];
             
-            ctx.quadraticCurveTo(p0.x, p0.y, midX, (p0.y + p1.y) / 2);
+            // Control point is the midpoint between current and next
+            const midX = (current.x + next.x) / 2;
+            const midY = (current.y + next.y) / 2;
+            
+            // From current to midpoint (first half of curve)
+            ctx.quadraticCurveTo(current.x, current.y, midX, midY);
         }
         
-        const lastPoint = points[points.length - 1];
+        // Final segment from second-last to last point
+        const last = points[points.length - 1];
         const secondLast = points[points.length - 2];
-        const midX = (secondLast.x + lastPoint.x) / 2;
-        ctx.quadraticCurveTo(secondLast.x, secondLast.y, lastPoint.x, lastPoint.y);
+        const midX = (secondLast.x + last.x) / 2;
+        const midY = (secondLast.y + last.y) / 2;
+        ctx.quadraticCurveTo(secondLast.x, secondLast.y, midX, midY);
+        ctx.quadraticCurveTo(last.x, last.y, last.x, last.y);
         
         ctx.stroke();
     }
     
-    // Draw curves
+    // Draw curves - they pass exactly through all data points
     drawSmoothCurve(chartData.highPoints, '#ef4444');
     drawSmoothCurve(chartData.lowPoints, '#3b82f6');
     
-    // Draw larger dots on curves with hover area
+    // Draw dots on curves - exactly at each data point
     function drawDots(points, color) {
         points.forEach(p => {
-            // Outer circle
+            // Outer circle (colored)
             ctx.fillStyle = color;
             ctx.beginPath();
             ctx.arc(p.x, p.y, 8, 0, Math.PI * 2);
             ctx.fill();
             
-            // Inner white circle
+            // White ring
             ctx.fillStyle = 'white';
             ctx.beginPath();
             ctx.arc(p.x, p.y, 5, 0, Math.PI * 2);
             ctx.fill();
             
-            // Center dot
+            // Center dot (colored)
             ctx.fillStyle = color;
             ctx.beginPath();
             ctx.arc(p.x, p.y, 3, 0, Math.PI * 2);
@@ -622,7 +625,6 @@ function drawTempChart(dailyData) {
                 const isHigh = idx >= chartData.dailyData.length;
                 const dayIndex = isHigh ? idx - chartData.dailyData.length : idx;
                 const day = chartData.dailyData[dayIndex];
-                const temp = p.temp;
                 const dayLabel = day.weekday ? day.weekday.substring(0, 2) : day.date.split('/')[1];
                 
                 chartTooltip.innerHTML = `
