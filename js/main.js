@@ -423,10 +423,21 @@ function showError() {
     if (elements.weatherIcon) elements.weatherIcon.textContent = '❓';
 }
 
-// Temperature Chart Rendering with smooth curves
+// Temperature Chart Rendering with smooth curves and interactive tooltips
+let chartData = null;
+let chartTooltip = null;
+
 function drawTempChart(dailyData) {
     const canvas = document.getElementById('tempChart');
     if (!canvas || !dailyData || dailyData.length === 0) return;
+    
+    // Store data for tooltip interaction
+    chartData = {
+        dailyData: dailyData,
+        temps: dailyData.map(d => ({ high: parseInt(d.high), low: parseInt(d.low) })),
+        highPoints: [],
+        lowPoints: []
+    };
     
     const ctx = canvas.getContext('2d');
     
@@ -446,7 +457,7 @@ function drawTempChart(dailyData) {
     
     const width = displayWidth;
     const height = displayHeight;
-    const padding = { top: 25, right: 20, bottom: 35, left: 40 };
+    const padding = { top: 30, right: 20, bottom: 40, left: 45 };
     
     // Clear canvas with theme-aware background
     const isDark = currentTheme === 'dark';
@@ -454,7 +465,7 @@ function drawTempChart(dailyData) {
     ctx.fillRect(0, 0, width, height);
     
     // Get min/max temperatures
-    const temps = dailyData.map(d => ({ high: parseInt(d.high), low: parseInt(d.low) }));
+    const temps = chartData.temps;
     const allTemps = temps.flatMap(t => [t.high, t.low]);
     const minTemp = Math.min(...allTemps) - 3;
     const maxTemp = Math.max(...allTemps) + 3;
@@ -501,8 +512,18 @@ function drawTempChart(dailyData) {
     dailyData.forEach((day, i) => {
         const x = dayToX(i);
         const label = day.weekday ? day.weekday.substring(0, 2) : (day.date || '').split('/')[1];
-        ctx.fillText(label, x, height - 8);
+        ctx.fillText(label, x, height - 10);
+        
+        // Store data for tooltip
+        if (!chartData.highPoints[i]) {
+            chartData.highPoints[i] = { x: dayToX(i), y: tempToY(temps[i].high), temp: temps[i].high };
+            chartData.lowPoints[i] = { x: dayToX(i), y: tempToY(temps[i].low), temp: temps[i].low };
+        }
     });
+    
+    // Update chartData with latest calculations
+    chartData.highPoints = temps.map((t, i) => ({ x: dayToX(i), y: tempToY(t.high), temp: t.high }));
+    chartData.lowPoints = temps.map((t, i) => ({ x: dayToX(i), y: tempToY(t.low), temp: t.low }));
     
     // Draw smooth curves using bezier curves
     function drawSmoothCurve(points, color) {
@@ -532,33 +553,112 @@ function drawTempChart(dailyData) {
         ctx.stroke();
     }
     
-    // Create points for curves
-    const highPoints = temps.map((t, i) => ({ x: dayToX(i), y: tempToY(t.high) }));
-    const lowPoints = temps.map((t, i) => ({ x: dayToX(i), y: tempToY(t.low) }));
-    
     // Draw curves
-    drawSmoothCurve(highPoints, '#ef4444');
-    drawSmoothCurve(lowPoints, '#3b82f6');
+    drawSmoothCurve(chartData.highPoints, '#ef4444');
+    drawSmoothCurve(chartData.lowPoints, '#3b82f6');
     
-    // Draw dots on curves
+    // Draw larger dots on curves with hover area
     function drawDots(points, color) {
-        ctx.fillStyle = color;
         points.forEach(p => {
+            // Outer circle
+            ctx.fillStyle = color;
+            ctx.beginPath();
+            ctx.arc(p.x, p.y, 8, 0, Math.PI * 2);
+            ctx.fill();
+            
+            // Inner white circle
+            ctx.fillStyle = 'white';
             ctx.beginPath();
             ctx.arc(p.x, p.y, 5, 0, Math.PI * 2);
             ctx.fill();
             
-            // Add white inner circle for better visibility
-            ctx.fillStyle = 'white';
-            ctx.beginPath();
-            ctx.arc(p.x, p.y, 2.5, 0, Math.PI * 2);
-            ctx.fill();
+            // Center dot
             ctx.fillStyle = color;
+            ctx.beginPath();
+            ctx.arc(p.x, p.y, 3, 0, Math.PI * 2);
+            ctx.fill();
         });
     }
     
-    drawDots(highPoints, '#ef4444');
-    drawDots(lowPoints, '#3b82f6');
+    drawDots(chartData.highPoints, '#ef4444');
+    drawDots(chartData.lowPoints, '#3b82f6');
+    
+    // Setup tooltip element if not exists
+    if (!chartTooltip) {
+        chartTooltip = document.createElement('div');
+        chartTooltip.className = 'chart-tooltip';
+        chartTooltip.style.cssText = `
+            position: absolute;
+            background: ${isDark ? 'rgba(30, 38, 65, 0.98)' : 'rgba(255, 255, 255, 0.98)'};
+            border-radius: 8px;
+            padding: 10px 14px;
+            font-size: 13px;
+            pointer-events: none;
+            opacity: 0;
+            transition: opacity 0.2s ease;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+            z-index: 100;
+            color: ${isDark ? '#fff' : '#333'};
+        `;
+        container.style.position = 'relative';
+        container.appendChild(chartTooltip);
+    }
+    
+    // Mouse move handler
+    canvas.onmousemove = function(e) {
+        const rect = canvas.getBoundingClientRect();
+        const mouseX = e.clientX - rect.left;
+        const mouseY = e.clientY - rect.top;
+        
+        let found = false;
+        
+        // Check all points for proximity
+        [...chartData.highPoints, ...chartData.lowPoints].forEach((p, idx) => {
+            const dx = mouseX - p.x;
+            const dy = mouseY - p.y;
+            const distance = Math.sqrt(dx * dx + dy * dy);
+            
+            if (distance < 15) {
+                const isHigh = idx >= chartData.dailyData.length;
+                const dayIndex = isHigh ? idx - chartData.dailyData.length : idx;
+                const day = chartData.dailyData[dayIndex];
+                const temp = p.temp;
+                const dayLabel = day.weekday ? day.weekday.substring(0, 2) : day.date.split('/')[1];
+                
+                chartTooltip.innerHTML = `
+                    <div style="font-weight: 600; margin-bottom: 5px;">${dayLabel} ${day.date}</div>
+                    <div style="color: #ef4444;">↑ ${currentLang === 'zh' ? '高温' : 'High'}: ${day.high}°C</div>
+                    <div style="color: #3b82f6;">↓ ${currentLang === 'zh' ? '低温' : 'Low'}: ${day.low}°C</div>
+                `;
+                
+                // Position tooltip
+                let tooltipX = p.x + 15;
+                let tooltipY = p.y - 30;
+                
+                // Keep tooltip in bounds
+                const tooltipWidth = 120;
+                if (tooltipX + tooltipWidth > width) {
+                    tooltipX = p.x - tooltipWidth - 15;
+                }
+                
+                chartTooltip.style.left = tooltipX + 'px';
+                chartTooltip.style.top = tooltipY + 'px';
+                chartTooltip.style.opacity = '1';
+                
+                found = true;
+            }
+        });
+        
+        if (!found) {
+            chartTooltip.style.opacity = '0';
+        }
+    };
+    
+    canvas.onmouseleave = function() {
+        if (chartTooltip) {
+            chartTooltip.style.opacity = '0';
+        }
+    };
 }
 
 // Export for debugging
