@@ -25,6 +25,7 @@ const elements = {
     pressure: document.getElementById('pressure'),
     humidity: document.getElementById('humidity'),
     precipitation: document.getElementById('precipitation'),
+    feelsLike: document.getElementById('feelsLike'),
     dayList: document.getElementById('dayList'),
     dayTabs: document.getElementById('dayTabs'),
     hourlyTableBody: document.getElementById('hourlyTableBody')
@@ -55,7 +56,7 @@ const weatherIcons = {
 // Weather description mapping
 const weatherDescMap = {
     '晴': { zh: '晴', en: 'Sunny' },
-    '多云': { zh: '多云', en: 'Cloudy' },
+    '多云': { zh: '多云', en: 'Cloudly' },
     '阴': { zh: '阴', en: 'Overcast' },
     '小雨': { zh: '小雨', en: 'Light Rain' },
     '中雨': { zh: '中雨', en: 'Moderate Rain' },
@@ -103,6 +104,11 @@ function toggleTheme() {
     document.documentElement.setAttribute('data-theme', currentTheme);
     localStorage.setItem('theme', currentTheme);
     updateThemeIcon();
+    
+    // Redraw chart with new theme colors
+    if (weatherData && weatherData.daily) {
+        setTimeout(() => drawTempChart(weatherData.daily), 100);
+    }
 }
 
 // Language Functions
@@ -135,9 +141,6 @@ function updateLanguageUI() {
         updateDailyForecast(weatherData.daily || []);
         updateDayTabs();
         updateHourlyTableIfDataAvailable();
-        if (weatherData.daily && weatherData.daily.length > 0) {
-            drawTempChart(weatherData.daily);
-        }
     }
 }
 
@@ -145,6 +148,11 @@ function toggleLanguage() {
     currentLang = currentLang === 'zh' ? 'en' : 'zh';
     localStorage.setItem('lang', currentLang);
     updateLanguageUI();
+    
+    // Redraw chart with new language labels
+    if (weatherData && weatherData.daily) {
+        drawTempChart(weatherData.daily);
+    }
 }
 
 // Event Listeners
@@ -155,6 +163,13 @@ function initEventListeners() {
     if (elements.langToggle) {
         elements.langToggle.addEventListener('click', toggleLanguage);
     }
+    
+    // Handle window resize for chart
+    window.addEventListener('resize', () => {
+        if (weatherData && weatherData.daily) {
+            drawTempChart(weatherData.daily);
+        }
+    });
 }
 
 // Load Weather Data
@@ -194,12 +209,11 @@ async function fetchWeatherFromCMA() {
 
 // Parse Weather HTML from CMA
 function parseWeatherHTML(html) {
-    // Same as before - omitted for brevity
-    // This would parse the CMA website HTML
+    // Implementation would parse CMA HTML
     return null;
 }
 
-// Update Weather Display - Only updates main overview, NOT the daily/hourly forecast
+// Update Weather Display
 function updateWeatherDisplay(data) {
     if (!data) return;
 
@@ -208,7 +222,7 @@ function updateWeatherDisplay(data) {
     // Always use realTimeWeather for the main display if available
     const current = realTimeWeather || data.current || {};
     
-    // Update main weather overview (this NEVER changes based on selected day)
+    // Update main weather overview
     if (elements.updateTimeValue) {
         elements.updateTimeValue.textContent = data.updateTime || '--';
     }
@@ -241,8 +255,11 @@ function updateWeatherDisplay(data) {
     if (elements.precipitation) {
         elements.precipitation.textContent = (current.precipitation || '0') + ' mm';
     }
+    if (elements.feelsLike) {
+        elements.feelsLike.textContent = (current.feelsLike || current.temp || '--') + '°C';
+    }
 
-    // Update daily and hourly forecasts (separate from main display)
+    // Update daily and hourly forecasts
     if (elements.dayList) {
         updateDailyForecast(data.daily || []);
     }
@@ -255,7 +272,7 @@ function updateWeatherDisplay(data) {
     
     // Draw temperature chart
     if (data.daily && data.daily.length > 0) {
-        drawTempChart(data.daily);
+        setTimeout(() => drawTempChart(data.daily), 50);
     }
 }
 
@@ -300,17 +317,17 @@ function updateDailyForecast(dailyData) {
 
     dailyData.slice(0, 7).forEach((day, index) => {
         const div = document.createElement('div');
-        div.className = 'day-item' + (index === 0 ? ' actived' : '');
+        div.className = 'forecast-item' + (index === 0 ? ' active' : '');
         
         const weekday = day.weekday || getWeekdayFromDate(day.date);
         const dateStr = day.date || '';
         const iconKey = day.dayWeatherIcon || day.dayWeather;
         
         div.innerHTML = `
-            <div class="day-date">${weekday}<br>${dateStr}</div>
-            <div class="day-icon">${weatherIcons[iconKey] || weatherIcons['default']}</div>
-            <div class="day-weather">${day.dayWeather || '--'}</div>
-            <div class="day-temp">
+            <div class="forecast-date">${weekday}<br>${dateStr}</div>
+            <div class="forecast-icon">${weatherIcons[iconKey] || weatherIcons['default']}</div>
+            <div class="forecast-weather">${day.dayWeather || '--'}</div>
+            <div class="forecast-temp">
                 <span class="high">${day.high || '--'}°</span> / 
                 <span class="low">${day.low || '--'}°</span>
             </div>
@@ -319,8 +336,8 @@ function updateDailyForecast(dailyData) {
         div.addEventListener('click', () => {
             if (selectedDayIndex !== index) {
                 selectedDayIndex = index;
-                document.querySelectorAll('.day-item').forEach(d => d.classList.remove('actived'));
-                div.classList.add('actived');
+                document.querySelectorAll('.forecast-item').forEach(d => d.classList.remove('active'));
+                div.classList.add('active');
                 updateDayTabs();
                 updateHourlyTableIfDataAvailable();
             }
@@ -354,17 +371,17 @@ function updateDayTabs() {
 
     weatherData.daily.slice(0, 7).forEach((day, index) => {
         const tab = document.createElement('div');
-        tab.className = 'day-tab' + (index === selectedDayIndex ? ' actived' : '');
+        tab.className = 'day-tab' + (index === selectedDayIndex ? ' active' : '');
         const weekday = day.weekday || getWeekdayFromDate(day.date);
         tab.textContent = weekday;
         
         tab.addEventListener('click', () => {
             if (selectedDayIndex !== index) {
                 selectedDayIndex = index;
-                document.querySelectorAll('.day-tab').forEach(t => t.classList.remove('actived'));
-                tab.classList.add('actived');
-                document.querySelectorAll('.day-item').forEach((d, i) => {
-                    d.classList.toggle('actived', i === index);
+                document.querySelectorAll('.day-tab').forEach(t => t.classList.remove('active'));
+                tab.classList.add('active');
+                document.querySelectorAll('.forecast-item').forEach((d, i) => {
+                    d.classList.toggle('active', i === index);
                 });
                 updateHourlyTableIfDataAvailable();
             }
@@ -392,8 +409,6 @@ function updateHourlyTable(dayHourly) {
             <td>${hour.precip || '0'}mm</td>
             <td>${hour.wind || '--'}m/s</td>
             <td>${hour.windDir || '--'}</td>
-            <td>${hour.pressure || '--'}hPa</td>
-            <td>${hour.humidity || '--'}%</td>
         `;
         tbody.appendChild(tr);
     });
@@ -408,28 +423,20 @@ function showError() {
     if (elements.weatherIcon) elements.weatherIcon.textContent = '❓';
 }
 
-// Export for debugging
-if (typeof window !== 'undefined') {
-    window.WeatherApp = {
-        parseWeatherHTML,
-        weatherIcons,
-        weatherDescMap
-    };
-}
-
-// Temperature Chart Rendering
+// Temperature Chart Rendering with smooth curves
 function drawTempChart(dailyData) {
     const canvas = document.getElementById('tempChart');
     if (!canvas || !dailyData || dailyData.length === 0) return;
     
     const ctx = canvas.getContext('2d');
     
-    // Set actual display size
-    const rect = canvas.getBoundingClientRect();
-    const displayWidth = rect.width || 400;
-    const displayHeight = rect.height || 150;
+    // Get actual display size
+    const container = canvas.parentElement;
+    const rect = container.getBoundingClientRect();
+    const displayWidth = rect.width || 600;
+    const displayHeight = rect.height || 180;
     
-    // Set canvas resolution to match display
+    // Set canvas resolution for high DPI
     const dpr = window.devicePixelRatio || 1;
     canvas.width = displayWidth * dpr;
     canvas.height = displayHeight * dpr;
@@ -439,35 +446,41 @@ function drawTempChart(dailyData) {
     
     const width = displayWidth;
     const height = displayHeight;
-    const padding = { top: 20, right: 15, bottom: 25, left: 30 };
+    const padding = { top: 25, right: 20, bottom: 35, left: 40 };
     
-    // Clear canvas
-    ctx.clearRect(0, 0, width, height);
+    // Clear canvas with theme-aware background
+    const isDark = currentTheme === 'dark';
+    ctx.fillStyle = isDark ? 'rgba(30, 38, 65, 0.5)' : 'rgba(255, 255, 255, 0.3)';
+    ctx.fillRect(0, 0, width, height);
     
     // Get min/max temperatures
     const temps = dailyData.map(d => ({ high: parseInt(d.high), low: parseInt(d.low) }));
     const allTemps = temps.flatMap(t => [t.high, t.low]);
-    const minTemp = Math.min(...allTemps) - 2;
-    const maxTemp = Math.max(...allTemps) + 2;
+    const minTemp = Math.min(...allTemps) - 3;
+    const maxTemp = Math.max(...allTemps) + 3;
     const tempRange = maxTemp - minTemp;
     
     const chartWidth = width - padding.left - padding.right;
     const chartHeight = height - padding.top - padding.bottom;
     
-    // Helper function to convert temperature to Y coordinate
+    // Helper functions
     function tempToY(temp) {
         return padding.top + chartHeight - ((temp - minTemp) / tempRange) * chartHeight;
     }
     
-    // Helper function to convert day index to X coordinate
     function dayToX(index) {
         return padding.left + (index / Math.max(dailyData.length - 1, 1)) * chartWidth;
     }
     
-    // Draw grid lines
-    ctx.strokeStyle = 'rgba(128, 128, 128, 0.2)';
+    // Get theme colors
+    const gridColor = isDark ? 'rgba(255, 255, 255, 0.1)' : 'rgba(0, 0, 0, 0.08)';
+    const textColor = isDark ? 'rgba(255, 255, 255, 0.5)' : 'rgba(0, 0, 0, 0.5)';
+    const textFont = '12px "Noto Sans SC", sans-serif';
+    
+    // Draw grid
+    ctx.strokeStyle = gridColor;
     ctx.lineWidth = 1;
-    const gridCount = 4;
+    const gridCount = 5;
     for (let i = 0; i <= gridCount; i++) {
         const y = padding.top + (i / gridCount) * chartHeight;
         ctx.beginPath();
@@ -475,72 +488,84 @@ function drawTempChart(dailyData) {
         ctx.lineTo(width - padding.right, y);
         ctx.stroke();
         
-        // Draw temperature labels
+        // Temperature labels
         const temp = Math.round(maxTemp - (i / gridCount) * tempRange);
-        ctx.fillStyle = 'rgba(128, 128, 128, 0.6)';
-        ctx.font = '10px Noto Sans SC, sans-serif';
+        ctx.fillStyle = textColor;
+        ctx.font = textFont;
         ctx.textAlign = 'right';
-        ctx.fillText(temp + '°', padding.left - 5, y + 3);
+        ctx.fillText(temp + '°', padding.left - 8, y + 4);
     }
     
-    // Draw day labels
-    ctx.fillStyle = 'rgba(128, 128, 128, 0.6)';
-    ctx.font = '10px Noto Sans SC, sans-serif';
+    // Day labels
     ctx.textAlign = 'center';
     dailyData.forEach((day, i) => {
         const x = dayToX(i);
         const label = day.weekday ? day.weekday.substring(0, 2) : (day.date || '').split('/')[1];
-        ctx.fillText(label, x, height - 5);
+        ctx.fillText(label, x, height - 8);
     });
     
-    // Draw high temperature line (red)
-    ctx.strokeStyle = '#ff5252';
-    ctx.lineWidth = 2;
-    ctx.beginPath();
-    ctx.setLineDash([]);
-    temps.forEach((t, i) => {
-        const x = dayToX(i);
-        const y = tempToY(t.high);
-        if (i === 0) {
-            ctx.moveTo(x, y);
-        } else {
-            ctx.lineTo(x, y);
-        }
-    });
-    ctx.stroke();
-    
-    // Draw high temp dots
-    ctx.fillStyle = '#ff5252';
-    temps.forEach((t, i) => {
-        const x = dayToX(i);
-        const y = tempToY(t.high);
+    // Draw smooth curves using bezier curves
+    function drawSmoothCurve(points, color) {
+        if (points.length < 2) return;
+        
+        ctx.strokeStyle = color;
+        ctx.lineWidth = 3;
+        ctx.lineCap = 'round';
+        ctx.lineJoin = 'round';
+        
         ctx.beginPath();
-        ctx.arc(x, y, 4, 0, Math.PI * 2);
-        ctx.fill();
-    });
-    
-    // Draw low temperature line (blue)
-    ctx.strokeStyle = '#448aff';
-    ctx.lineWidth = 2;
-    ctx.beginPath();
-    temps.forEach((t, i) => {
-        const x = dayToX(i);
-        const y = tempToY(t.low);
-        if (i === 0) {
-            ctx.moveTo(x, y);
-        } else {
-            ctx.lineTo(x, y);
+        ctx.moveTo(points[0].x, points[0].y);
+        
+        for (let i = 0; i < points.length - 1; i++) {
+            const p0 = points[i];
+            const p1 = points[i + 1];
+            const midX = (p0.x + p1.x) / 2;
+            
+            ctx.quadraticCurveTo(p0.x, p0.y, midX, (p0.y + p1.y) / 2);
         }
-    });
-    ctx.stroke();
+        
+        const lastPoint = points[points.length - 1];
+        const secondLast = points[points.length - 2];
+        const midX = (secondLast.x + lastPoint.x) / 2;
+        ctx.quadraticCurveTo(secondLast.x, secondLast.y, lastPoint.x, lastPoint.y);
+        
+        ctx.stroke();
+    }
     
-    // Draw low temp dots
-    ctx.fillStyle = '#448aff';
-    temps.forEach((t, i) => {
-        const x = dayToX(i);
-        const y = tempToY(t.low);
-        ctx.beginPath();
-        ctx.arc(x, y, 4, 0, Math.PI * 2);
-        ctx.fill();
-    });
+    // Create points for curves
+    const highPoints = temps.map((t, i) => ({ x: dayToX(i), y: tempToY(t.high) }));
+    const lowPoints = temps.map((t, i) => ({ x: dayToX(i), y: tempToY(t.low) }));
+    
+    // Draw curves
+    drawSmoothCurve(highPoints, '#ef4444');
+    drawSmoothCurve(lowPoints, '#3b82f6');
+    
+    // Draw dots on curves
+    function drawDots(points, color) {
+        ctx.fillStyle = color;
+        points.forEach(p => {
+            ctx.beginPath();
+            ctx.arc(p.x, p.y, 5, 0, Math.PI * 2);
+            ctx.fill();
+            
+            // Add white inner circle for better visibility
+            ctx.fillStyle = 'white';
+            ctx.beginPath();
+            ctx.arc(p.x, p.y, 2.5, 0, Math.PI * 2);
+            ctx.fill();
+            ctx.fillStyle = color;
+        });
+    }
+    
+    drawDots(highPoints, '#ef4444');
+    drawDots(lowPoints, '#3b82f6');
+}
+
+// Export for debugging
+if (typeof window !== 'undefined') {
+    window.WeatherApp = {
+        parseWeatherHTML,
+        weatherIcons,
+        weatherDescMap
+    };
 }

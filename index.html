@@ -6,7 +6,7 @@
     <title>北京海淀区天气预报</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@300;400;500;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="css/style.css">
 </head>
 <body>
@@ -27,66 +27,80 @@
             </div>
         </header>
 
-        <!-- 实时天气概览 -->
-        <div class="current-weather-section">
-            <div class="current-main card">
-                <div class="update-time" id="pubtime">
+        <!-- 主天气卡片 -->
+        <div class="main-weather-card">
+            <div class="current-info">
+                <div class="update-time">
                     <span data-zh="更新于" data-en="Updated at">更新于</span>: <span id="updateTimeValue">--</span>
                 </div>
-                <div class="current-temp">
-                    <span id="temperature">--</span><span class="temp-unit">℃</span>
+                <div class="temperature-display">
+                    <span class="temperature-value" id="temperature">--</span>
+                    <span class="temperature-unit">℃</span>
                 </div>
-                <div class="current-weather">
-                    <span id="weatherIcon">☀️</span>
+                <div class="weather-description">
+                    <span class="weather-icon" id="weatherIcon">☀️</span>
                     <span id="weatherDesc" data-zh="晴" data-en="Sunny">晴</span>
                 </div>
-                <div class="current-wind" id="wind">
+                <div class="wind-info">
                     <span data-zh="风速" data-en="Wind">风速</span>: <span id="windText">--</span>
                 </div>
             </div>
-
-            <div class="current-details">
-                <div class="detail-item card">
+            <div class="details-grid">
+                <div class="detail-card">
                     <div class="detail-icon">🌡️</div>
                     <div class="detail-label" data-zh="气压" data-en="Pressure">气压</div>
                     <div class="detail-value" id="pressure">-- hPa</div>
                 </div>
-                <div class="detail-item card">
+                <div class="detail-card">
                     <div class="detail-icon">💧</div>
                     <div class="detail-label" data-zh="湿度" data-en="Humidity">湿度</div>
                     <div class="detail-value" id="humidity">--%</div>
                 </div>
-                <div class="detail-item card">
+                <div class="detail-card">
                     <div class="detail-icon">🌧️</div>
                     <div class="detail-label" data-zh="降水" data-en="Precipitation">降水</div>
                     <div class="detail-value" id="precipitation">-- mm</div>
                 </div>
-            </div>
-
-            <!-- 7天温度曲线图 -->
-            <div class="temp-chart-container card">
-                <div class="chart-title" data-zh="一周温度趋势" data-en="Weekly Temperature Trend">一周温度趋势</div>
-                <canvas id="tempChart" width="400" height="150"></canvas>
-                <div class="chart-legend">
-                    <span class="legend-item high-temp"><span class="legend-dot"></span><span data-zh="最高温" data-en="High">最高温</span></span>
-                    <span class="legend-item low-temp"><span class="legend-dot"></span><span data-zh="最低温" data-en="Low">最低温</span></span>
+                <div class="detail-card">
+                    <div class="detail-icon">🌡️</div>
+                    <div class="detail-label" data-zh="体感温度" data-en="Feels Like">体感温度</div>
+                    <div class="detail-value" id="feelsLike">--°C</div>
                 </div>
             </div>
         </div>
 
+        <!-- 温度曲线图 -->
+        <div class="chart-section">
+            <div class="chart-header">
+                <div class="chart-title" data-zh="一周温度趋势" data-en="Weekly Temperature Trend">一周温度趋势</div>
+                <div class="chart-legend">
+                    <div class="legend-item">
+                        <span class="legend-dot legend-high"></span>
+                        <span data-zh="最高温" data-en="High">最高温</span>
+                    </div>
+                    <div class="legend-item">
+                        <span class="legend-dot legend-low"></span>
+                        <span data-zh="最低温" data-en="Low">最低温</span>
+                    </div>
+                </div>
+            </div>
+            <div class="chart-container">
+                <canvas id="tempChart"></canvas>
+            </div>
+        </div>
+
         <!-- 7天天气预报 -->
-        <div class="forecast-section card">
+        <div class="forecast-section">
             <h3 class="section-title" data-zh="7天天气预报" data-en="7-Day Forecast">7天天气预报</h3>
-            <div class="day-list" id="dayList">
+            <div class="forecast-list" id="dayList">
                 <!-- 动态生成 -->
             </div>
         </div>
 
         <!-- 逐小时预报 -->
-        <div class="hourly-section card">
-            <h3 class="section-title" data-zh="逐小时精细化预报" data-en="Hourly Forecast">逐小时精细化预报</h3>
-            <div class="hourly-controls">
-                <span data-zh="选择日期：" data-en="Select Day:">选择日期：</span>
+        <div class="hourly-section">
+            <div class="hourly-header">
+                <h3 class="section-title" data-zh="逐小时精细化预报" data-en="Hourly Forecast">逐小时精细化预报</h3>
                 <div class="day-tabs" id="dayTabs">
                     <!-- 动态生成 -->
                 </div>
@@ -101,8 +115,6 @@
                             <th data-zh="降水" data-en="Precip">降水</th>
                             <th data-zh="风速" data-en="Wind">风速</th>
                             <th data-zh="风向" data-en="Wind Dir">风向</th>
-                            <th data-zh="气压" data-en="Pressure">气压</th>
-                            <th data-zh="湿度" data-en="Humidity">湿度</th>
                         </tr>
                     </thead>
                     <tbody id="hourlyTableBody">
@@ -114,8 +126,7 @@
 
         <!-- 数据来源 -->
         <footer class="footer">
-            <p data-zh="数据来源：中国气象局" data-en="Data Source: China Meteorological Administration">数据来源：中国气象局</p>
-            <p class="auto-update" data-zh="自动更新：每1小时" data-en="Auto Update: Every Hour">自动更新：每1小时</p>
+            <p data-zh="数据来源：中国气象局 | 自动更新：每1小时" data-en="Data Source: China Meteorological Administration | Auto Update: Every Hour">数据来源：中国气象局 | 自动更新：每1小时</p>
         </footer>
     </div>
 
