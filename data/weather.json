@@ -1,11 +1,11 @@
 {
-  "updateTime": "2026-07-10 02:29",
-  "generationTime": "2026-07-10T02:29:15.081Z",
+  "updateTime": "2026-07-10 06:39",
+  "generationTime": "2026-07-10T06:39:04.385Z",
   "location": "北京海淀区",
   "locationCode": "54399",
   "source": "China Meteorological Administration",
   "current": {
-    "temp": "32",
+    "temp": "33",
     "weather": "晴",
     "wind": "西南风 微风",
     "pressure": "1001",
@@ -20,7 +20,7 @@
       "dayWeatherIcon": "w0",
       "dayWind": "南风",
       "dayWindLevel": "微风",
-      "high": "32",
+      "high": "33",
       "low": "22",
       "nightWeather": "晴",
       "nightWeatherIcon": "w0",
@@ -34,8 +34,8 @@
       "dayWeatherIcon": "w0",
       "dayWind": "南风",
       "dayWindLevel": "微风",
-      "high": "28",
-      "low": "19",
+      "high": "27",
+      "low": "23",
       "nightWeather": "晴",
       "nightWeatherIcon": "w0",
       "nightWind": "北风",
@@ -48,8 +48,8 @@
       "dayWeatherIcon": "w0",
       "dayWind": "南风",
       "dayWindLevel": "微风",
-      "high": "31",
-      "low": "18",
+      "high": "35",
+      "low": "21",
       "nightWeather": "晴",
       "nightWeatherIcon": "w0",
       "nightWind": "北风",
@@ -62,8 +62,8 @@
       "dayWeatherIcon": "w0",
       "dayWind": "南风",
       "dayWindLevel": "微风",
-      "high": "33",
-      "low": "21",
+      "high": "27",
+      "low": "15",
       "nightWeather": "晴",
       "nightWeatherIcon": "w0",
       "nightWind": "北风",
@@ -77,7 +77,7 @@
       "dayWind": "南风",
       "dayWindLevel": "微风",
       "high": "26",
-      "low": "18",
+      "low": "17",
       "nightWeather": "晴",
       "nightWeatherIcon": "w0",
       "nightWind": "北风",
@@ -90,8 +90,8 @@
       "dayWeatherIcon": "w0",
       "dayWind": "南风",
       "dayWindLevel": "微风",
-      "high": "28",
-      "low": "20",
+      "high": "34",
+      "low": "21",
       "nightWeather": "晴",
       "nightWeatherIcon": "w0",
       "nightWind": "北风",
@@ -104,8 +104,8 @@
       "dayWeatherIcon": "w0",
       "dayWind": "南风",
       "dayWindLevel": "微风",
-      "high": "26",
-      "low": "22",
+      "high": "35",
+      "low": "17",
       "nightWeather": "晴",
       "nightWeatherIcon": "w0",
       "nightWind": "北风",
@@ -119,82 +119,82 @@
         {
           "time": "08:00",
           "icon": "w0",
-          "temp": "29",
+          "temp": "21",
           "precip": "0",
-          "wind": "4",
+          "wind": "5",
           "windDir": "南风",
-          "pressure": "1013",
-          "humidity": "65"
+          "pressure": "1006",
+          "humidity": "42"
         },
         {
           "time": "11:00",
           "icon": "w0",
-          "temp": "23",
+          "temp": "26",
           "precip": "0",
-          "wind": "2",
+          "wind": "4",
           "windDir": "南风",
-          "pressure": "1002",
-          "humidity": "58"
+          "pressure": "1005",
+          "humidity": "48"
         },
         {
           "time": "14:00",
           "icon": "w0",
-          "temp": "26",
+          "temp": "20",
           "precip": "0",
-          "wind": "6",
+          "wind": "5",
           "windDir": "南风",
-          "pressure": "1007",
-          "humidity": "80"
+          "pressure": "997",
+          "humidity": "47"
         },
         {
           "time": "17:00",
           "icon": "w0",
-          "temp": "23",
+          "temp": "25",
           "precip": "0",
-          "wind": "6",
+          "wind": "3",
           "windDir": "南风",
-          "pressure": "1002",
-          "humidity": "55"
+          "pressure": "996",
+          "humidity": "76"
         },
         {
           "time": "20:00",
           "icon": "w0",
-          "temp": "28",
+          "temp": "21",
           "precip": "0",
-          "wind": "4",
+          "wind": "5",
           "windDir": "南风",
-          "pressure": "1014",
+          "pressure": "998",
           "humidity": "62"
         },
         {
           "time": "23:00",
           "icon": "w0",
-          "temp": "27",
+          "temp": "23",
           "precip": "0",
-          "wind": "2",
+          "wind": "3",
           "windDir": "南风",
-          "pressure": "1007",
-          "humidity": "41"
+          "pressure": "1006",
+          "humidity": "68"
         },
         {
           "time": "02:00",
           "icon": "w0",
-          "temp": "26",
+          "temp": "21",
           "precip": "0",
-          "wind": "3",
+          "wind": "5",
           "windDir": "南风",
-          "pressure": "1014",
-          "humidity": "66"
+          "pressure": "1013",
+          "humidity": "50"
         },
         {
           "time": "05:00",
           "icon": "w0",
-          "temp": "21",
+          "temp": "27",
           "precip": "0",
           "wind": "3",
           "windDir": "南风",
-          "pressure": "1002",
-          "humidity": "53"
+          "pressure": "1003",
+          "humidity": "74"
         }
       ]
     },
@@ -204,82 +204,82 @@
         {
           "time": "08:00",
           "icon": "w0",
-          "temp": "24",
+          "temp": "25",
           "precip": "0",
-          "wind": "5",
+          "wind": "2",
           "windDir": "南风",
-          "pressure": "1002",
-          "humidity": "74"
+          "pressure": "1003",
+          "humidity": "40"
         },
         {
           "time": "11:00",
-          "icon": "w0",
-          "temp": "24",
-          "precip": "0",
-          "wind": "6",
-          "windDir": "南风",
-          "pressure": "1009",
-          "humidity": "70"
-        },
-        {
-          "time": "14:00",
-          "icon": "w0",
-          "temp": "28",
-          "precip": "0",
-          "wind": "4",
-          "windDir": "南风",
-          "pressure": "998",
-          "humidity": "65"
-        },
-        {
-          "time": "17:00",
-          "icon": "w0",
-          "temp": "25",
-          "precip": "0",
-          "wind": "3",
-          "windDir": "南风",
-          "pressure": "1010",
-          "humidity": "55"
-        },
-        {
-          "time": "20:00",
-          "icon": "w0",
-          "temp": "26",
-          "precip": "0",
-          "wind": "3",
-          "windDir": "南风",
-          "pressure": "1013",
-          "humidity": "67"
-        },
-        {
-          "time": "23:00",
-          "icon": "w0",
-          "temp": "26",
-          "precip": "0",
-          "wind": "5",
-          "windDir": "南风",
-          "pressure": "1013",
-          "humidity": "60"
-        },
-        {
-          "time": "02:00",
           "icon": "w0",
           "temp": "22",
           "precip": "0",
           "wind": "3",
           "windDir": "南风",
-          "pressure": "1006",
-          "humidity": "68"
+          "pressure": "1000",
+          "humidity": "43"
+        },
+        {
+          "time": "14:00",
+          "icon": "w0",
+          "temp": "23",
+          "precip": "0",
+          "wind": "4",
+          "windDir": "南风",
+          "pressure": "1015",
+          "humidity": "78"
+        },
+        {
+          "time": "17:00",
+          "icon": "w0",
+          "temp": "20",
+          "precip": "0",
+          "wind": "2",
+          "windDir": "南风",
+          "pressure": "1010",
+          "humidity": "51"
+        },
+        {
+          "time": "20:00",
+          "icon": "w0",
+          "temp": "22",
+          "precip": "0",
+          "wind": "4",
+          "windDir": "南风",
+          "pressure": "1005",
+          "humidity": "73"
+        },
+        {
+          "time": "23:00",
+          "icon": "w0",
+          "temp": "29",
+          "precip": "0",
+          "wind": "4",
+          "windDir": "南风",
+          "pressure": "1001",
+          "humidity": "61"
+        },
+        {
+          "time": "02:00",
+          "icon": "w0",
+          "temp": "25",
+          "precip": "0",
+          "wind": "5",
+          "windDir": "南风",
+          "pressure": "1008",
+          "humidity": "76"
         },
         {
           "time": "05:00",
           "icon": "w0",
-          "temp": "25",
+          "temp": "22",
           "precip": "0",
-          "wind": "3",
+          "wind": "6",
           "windDir": "南风",
-          "pressure": "998",
-          "humidity": "48"
+          "pressure": "1009",
+          "humidity": "60"
         }
       ]
     },
@@ -289,82 +289,82 @@
         {
           "time": "08:00",
           "icon": "w0",
-          "temp": "23",
+          "temp": "29",
           "precip": "0",
-          "wind": "2",
+          "wind": "3",
           "windDir": "南风",
-          "pressure": "1010",
-          "humidity": "65"
+          "pressure": "1014",
+          "humidity": "73"
         },
         {
           "time": "11:00",
           "icon": "w0",
-          "temp": "25",
-          "precip": "0",
-          "wind": "3",
-          "windDir": "南风",
-          "pressure": "1007",
-          "humidity": "72"
-        },
-        {
-          "time": "14:00",
-          "icon": "w0",
-          "temp": "23",
+          "temp": "24",
           "precip": "0",
           "wind": "4",
           "windDir": "南风",
-          "pressure": "1003",
-          "humidity": "78"
+          "pressure": "996",
+          "humidity": "77"
         },
         {
-          "time": "17:00",
+          "time": "14:00",
           "icon": "w0",
           "temp": "24",
           "precip": "0",
           "wind": "5",
           "windDir": "南风",
-          "pressure": "997",
-          "humidity": "54"
+          "pressure": "1011",
+          "humidity": "44"
+        },
+        {
+          "time": "17:00",
+          "icon": "w0",
+          "temp": "27",
+          "precip": "0",
+          "wind": "6",
+          "windDir": "南风",
+          "pressure": "1001",
+          "humidity": "49"
         },
         {
           "time": "20:00",
           "icon": "w0",
-          "temp": "21",
+          "temp": "25",
           "precip": "0",
           "wind": "2",
           "windDir": "南风",
-          "pressure": "1006",
-          "humidity": "74"
+          "pressure": "1007",
+          "humidity": "48"
         },
         {
           "time": "23:00",
           "icon": "w0",
-          "temp": "27",
+          "temp": "25",
           "precip": "0",
-          "wind": "3",
+          "wind": "4",
           "windDir": "南风",
-          "pressure": "1007",
-          "humidity": "75"
+          "pressure": "1005",
+          "humidity": "55"
         },
         {
           "time": "02:00",
           "icon": "w0",
-          "temp": "29",
+          "temp": "26",
           "precip": "0",
-          "wind": "3",
+          "wind": "4",
           "windDir": "南风",
-          "pressure": "1000",
-          "humidity": "69"
+          "pressure": "1008",
+          "humidity": "48"
         },
         {
           "time": "05:00",
           "icon": "w0",
-          "temp": "29",
+          "temp": "24",
           "precip": "0",
-          "wind": "5",
+          "wind": "6",
           "windDir": "南风",
-          "pressure": "999",
-          "humidity": "44"
+          "pressure": "1000",
+          "humidity": "63"
         }
       ]
     },
@@ -374,52 +374,52 @@
         {
           "time": "08:00",
           "icon": "w0",
-          "temp": "29",
-          "precip": "0",
-          "wind": "3",
-          "windDir": "南风",
-          "pressure": "997",
-          "humidity": "46"
-        },
-        {
-          "time": "11:00",
-          "icon": "w0",
-          "temp": "29",
-          "precip": "0",
-          "wind": "3",
-          "windDir": "南风",
-          "pressure": "1000",
-          "humidity": "74"
-        },
-        {
-          "time": "14:00",
-          "icon": "w0",
-          "temp": "21",
-          "precip": "0",
-          "wind": "3",
-          "windDir": "南风",
-          "pressure": "1015",
-          "humidity": "56"
-        },
-        {
-          "time": "17:00",
-          "icon": "w0",
-          "temp": "21",
-          "precip": "0",
-          "wind": "2",
-          "windDir": "南风",
-          "pressure": "1013",
-          "humidity": "73"
-        },
-        {
-          "time": "20:00",
-          "icon": "w0",
-          "temp": "30",
+          "temp": "26",
           "precip": "0",
           "wind": "5",
           "windDir": "南风",
           "pressure": "1011",
+          "humidity": "52"
+        },
+        {
+          "time": "11:00",
+          "icon": "w0",
+          "temp": "26",
+          "precip": "0",
+          "wind": "2",
+          "windDir": "南风",
+          "pressure": "1011",
           "humidity": "44"
+        },
+        {
+          "time": "14:00",
+          "icon": "w0",
+          "temp": "28",
+          "precip": "0",
+          "wind": "4",
+          "windDir": "南风",
+          "pressure": "1002",
+          "humidity": "44"
+        },
+        {
+          "time": "17:00",
+          "icon": "w0",
+          "temp": "28",
+          "precip": "0",
+          "wind": "3",
+          "windDir": "南风",
+          "pressure": "1011",
+          "humidity": "56"
+        },
+        {
+          "time": "20:00",
+          "icon": "w0",
+          "temp": "20",
+          "precip": "0",
+          "wind": "3",
+          "windDir": "南风",
+          "pressure": "1015",
+          "humidity": "65"
         },
         {
           "time": "23:00",
@@ -428,28 +428,28 @@
           "precip": "0",
           "wind": "3",
           "windDir": "南风",
-          "pressure": "1003",
-          "humidity": "42"
+          "pressure": "1014",
+          "humidity": "70"
         },
         {
           "time": "02:00",
           "icon": "w0",
-          "temp": "29",
+          "temp": "24",
           "precip": "0",
-          "wind": "6",
+          "wind": "3",
           "windDir": "南风",
-          "pressure": "997",
-          "humidity": "72"
+          "pressure": "1011",
+          "humidity": "70"
         },
         {
           "time": "05:00",
           "icon": "w0",
-          "temp": "27",
+          "temp": "24",
           "precip": "0",
-          "wind": "3",
+          "wind": "6",
           "windDir": "南风",
-          "pressure": "1001",
-          "humidity": "48"
+          "pressure": "1014",
+          "humidity": "77"
         }
       ]
     },
@@ -459,81 +459,81 @@
         {
           "time": "08:00",
           "icon": "w0",
-          "temp": "21",
+          "temp": "28",
           "precip": "0",
-          "wind": "4",
+          "wind": "5",
           "windDir": "南风",
-          "pressure": "1005",
-          "humidity": "54"
+          "pressure": "1010",
+          "humidity": "80"
         },
         {
           "time": "11:00",
           "icon": "w0",
-          "temp": "29",
+          "temp": "24",
           "precip": "0",
-          "wind": "3",
+          "wind": "6",
           "windDir": "南风",
-          "pressure": "997",
-          "humidity": "71"
+          "pressure": "1002",
+          "humidity": "78"
         },
         {
           "time": "14:00",
           "icon": "w0",
-          "temp": "25",
+          "temp": "28",
           "precip": "0",
-          "wind": "5",
+          "wind": "4",
           "windDir": "南风",
-          "pressure": "1013",
-          "humidity": "53"
+          "pressure": "999",
+          "humidity": "57"
         },
         {
           "time": "17:00",
           "icon": "w0",
-          "temp": "28",
+          "temp": "27",
           "precip": "0",
-          "wind": "3",
+          "wind": "5",
           "windDir": "南风",
-          "pressure": "996",
-          "humidity": "62"
+          "pressure": "998",
+          "humidity": "45"
         },
         {
           "time": "20:00",
           "icon": "w0",
-          "temp": "20",
+          "temp": "26",
           "precip": "0",
-          "wind": "6",
+          "wind": "3",
           "windDir": "南风",
-          "pressure": "1009",
-          "humidity": "79"
+          "pressure": "1013",
+          "humidity": "48"
         },
         {
           "time": "23:00",
           "icon": "w0",
-          "temp": "21",
+          "temp": "26",
           "precip": "0",
-          "wind": "5",
+          "wind": "4",
           "windDir": "南风",
-          "pressure": "1004",
-          "humidity": "72"
+          "pressure": "1000",
+          "humidity": "57"
         },
         {
           "time": "02:00",
           "icon": "w0",
-          "temp": "25",
+          "temp": "28",
           "precip": "0",
-          "wind": "2",
+          "wind": "4",
           "windDir": "南风",
-          "pressure": "1013",
-          "humidity": "80"
+          "pressure": "999",
+          "humidity": "50"
         },
         {
           "time": "05:00",
           "icon": "w0",
-          "temp": "28",
+          "temp": "25",
           "precip": "0",
-          "wind": "2",
+          "wind": "6",
           "windDir": "南风",
-          "pressure": "996",
+          "pressure": "998",
           "humidity": "79"
         }
       ]
@@ -544,32 +544,32 @@
         {
           "time": "08:00",
           "icon": "w0",
-          "temp": "20",
+          "temp": "26",
           "precip": "0",
-          "wind": "4",
+          "wind": "5",
           "windDir": "南风",
-          "pressure": "1005",
-          "humidity": "68"
+          "pressure": "1009",
+          "humidity": "61"
         },
         {
           "time": "11:00",
           "icon": "w0",
-          "temp": "25",
+          "temp": "26",
           "precip": "0",
-          "wind": "6",
+          "wind": "5",
           "windDir": "南风",
-          "pressure": "997",
-          "humidity": "75"
+          "pressure": "996",
+          "humidity": "47"
         },
         {
           "time": "14:00",
           "icon": "w0",
-          "temp": "29",
+          "temp": "22",
           "precip": "0",
           "wind": "2",
           "windDir": "南风",
-          "pressure": "1009",
-          "humidity": "55"
+          "pressure": "1005",
+          "humidity": "77"
         },
         {
           "time": "17:00",
@@ -578,48 +578,48 @@
           "precip": "0",
           "wind": "3",
           "windDir": "南风",
-          "pressure": "998",
-          "humidity": "79"
+          "pressure": "1008",
+          "humidity": "49"
         },
         {
           "time": "20:00",
           "icon": "w0",
-          "temp": "28",
+          "temp": "24",
           "precip": "0",
-          "wind": "6",
+          "wind": "3",
           "windDir": "南风",
-          "pressure": "1005",
-          "humidity": "41"
+          "pressure": "1006",
+          "humidity": "59"
         },
         {
           "time": "23:00",
           "icon": "w0",
-          "temp": "25",
+          "temp": "30",
           "precip": "0",
-          "wind": "5",
+          "wind": "3",
           "windDir": "南风",
-          "pressure": "1015",
-          "humidity": "73"
+          "pressure": "1014",
+          "humidity": "60"
         },
         {
           "time": "02:00",
           "icon": "w0",
-          "temp": "25",
+          "temp": "24",
           "precip": "0",
-          "wind": "3",
+          "wind": "2",
           "windDir": "南风",
-          "pressure": "1002",
-          "humidity": "71"
+          "pressure": "1007",
+          "humidity": "58"
         },
         {
           "time": "05:00",
           "icon": "w0",
           "temp": "26",
           "precip": "0",
-          "wind": "4",
+          "wind": "5",
           "windDir": "南风",
-          "pressure": "1005",
-          "humidity": "41"
+          "pressure": "1001",
+          "humidity": "49"
         }
       ]
     },
@@ -629,82 +629,82 @@
         {
           "time": "08:00",
           "icon": "w0",
-          "temp": "24",
+          "temp": "21",
           "precip": "0",
-          "wind": "5",
+          "wind": "4",
           "windDir": "南风",
-          "pressure": "1013",
-          "humidity": "73"
+          "pressure": "997",
+          "humidity": "66"
         },
         {
           "time": "11:00",
           "icon": "w0",
-          "temp": "24",
+          "temp": "22",
           "precip": "0",
-          "wind": "5",
+          "wind": "4",
           "windDir": "南风",
-          "pressure": "1010",
-          "humidity": "65"
+          "pressure": "1011",
+          "humidity": "67"
         },
         {
           "time": "14:00",
           "icon": "w0",
-          "temp": "20",
+          "temp": "26",
           "precip": "0",
-          "wind": "4",
+          "wind": "2",
           "windDir": "南风",
-          "pressure": "1000",
-          "humidity": "73"
+          "pressure": "1005",
+          "humidity": "42"
         },
         {
           "time": "17:00",
           "icon": "w0",
-          "temp": "28",
+          "temp": "26",
           "precip": "0",
           "wind": "6",
           "windDir": "南风",
-          "pressure": "999",
-          "humidity": "53"
+          "pressure": "997",
+          "humidity": "63"
         },
         {
           "time": "20:00",
           "icon": "w0",
-          "temp": "29",
+          "temp": "26",
           "precip": "0",
-          "wind": "2",
+          "wind": "3",
           "windDir": "南风",
           "pressure": "1012",
-          "humidity": "47"
+          "humidity": "73"
         },
         {
           "time": "23:00",
           "icon": "w0",
-          "temp": "28",
-          "precip": "0",
-          "wind": "5",
-          "windDir": "南风",
-          "pressure": "1004",
-          "humidity": "79"
-        },
-        {
-          "time": "02:00",
-          "icon": "w0",
-          "temp": "29",
+          "temp": "26",
           "precip": "0",
           "wind": "5",
           "windDir": "南风",
           "pressure": "1000",
-          "humidity": "50"
+          "humidity": "49"
+        },
+        {
+          "time": "02:00",
+          "icon": "w0",
+          "temp": "21",
+          "precip": "0",
+          "wind": "3",
+          "windDir": "南风",
+          "pressure": "1000",
+          "humidity": "70"
         },
         {
           "time": "05:00",
           "icon": "w0",
           "temp": "29",
           "precip": "0",
-          "wind": "3",
+          "wind": "5",
           "windDir": "南风",
           "pressure": "998",
-          "humidity": "53"
+          "humidity": "55"
         }
       ]
     }
